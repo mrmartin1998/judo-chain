@@ -19,8 +19,19 @@ const Navbar = () => {
       });
     };
 
-    loadAccount();
+    if (window.ethereum) {
+      loadAccount();
+    }
   }, []);
+
+  const handleConnectWallet = async () => {
+    try {
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      setAccount(accounts[0]);
+    } catch (error) {
+      console.error("User denied account access");
+    }
+  };
 
   return (
     <nav className="bg-white shadow-md">
@@ -67,9 +78,12 @@ const Navbar = () => {
                 {account}
               </div>
             ) : (
-              <div className="text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
-                Not Connected
-              </div>
+              <button
+                onClick={handleConnectWallet}
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              >
+                Connect Wallet
+              </button>
             )}
           </div>
         </div>

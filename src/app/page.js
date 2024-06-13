@@ -1,10 +1,25 @@
+"use client";
+
 import Head from 'next/head';
 import dynamic from 'next/dynamic';
-import Link from 'next/link';
+import { useState, useEffect } from 'react';
+import web3 from './utils/web3';
 
 const Navbar = dynamic(() => import('./components/Navbar'), { ssr: false });
 
 export default function Home() {
+  const [account, setAccount] = useState('');
+
+  useEffect(() => {
+    const loadAccount = async () => {
+      const accounts = await web3.eth.getAccounts();
+      if (accounts.length > 0) {
+        setAccount(accounts[0]);
+      }
+    };
+    loadAccount();
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-100">
       <Head>
@@ -50,92 +65,59 @@ export default function Home() {
               </div>
               <div className="bg-white border-4 border-dashed border-gray-200 rounded-lg p-8 shadow-lg">
                 <h2 className="text-2xl font-bold mb-4 text-center text-gray-800">Register Profile</h2>
-                <form>
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      First name
-                    </label>
-                    <input
-                      type="text"
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
+                {account ? (
+                  <form>
+                    <div className="mb-4">
+                      <label className="block text-gray-700 text-sm font-bold mb-2">
+                        First name
+                      </label>
+                      <input
+                        type="text"
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      />
+                    </div>
+                    <div className="mb-4">
+                      <label className="block text-gray-700 text-sm font-bold mb-2">
+                        Last name
+                      </label>
+                      <input
+                        type="text"
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      />
+                    </div>
+                    <div className="mb-4">
+                      <label className="block text-gray-700 text-sm font-bold mb-2">
+                        Email address
+                      </label>
+                      <input
+                        type="email"
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      />
+                    </div>
+                    <div className="mb-4">
+                      <label className="block text-gray-700 text-sm font-bold mb-2">
+                        Current belt level
+                      </label>
+                      <select className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <option>White belt</option>
+                        <option>Blue belt</option>
+                        <option>Purple belt</option>
+                        <option>Brown belt</option>
+                        <option>Black belt</option>
+                      </select>
+                    </div>
+                    <button
+                      type="submit"
+                      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    >
+                      Register
+                    </button>
+                  </form>
+                ) : (
+                  <div className="flex flex-col items-center">
+                    <p className="text-lg mb-4 text-gray-600">Connect your MetaMask wallet to register.</p>
                   </div>
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Last name
-                    </label>
-                    <input
-                      type="text"
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
-                  </div>
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Email address
-                    </label>
-                    <input
-                      type="email"
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
-                  </div>
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Birthdate
-                    </label>
-                    <input
-                      type="date"
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
-                  </div>
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Current belt level
-                    </label>
-                    <select className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                      <option>White belt</option>
-                      <option>Blue belt</option>
-                      <option>Purple belt</option>
-                      <option>Brown belt</option>
-                      <option>Black belt</option>
-                    </select>
-                  </div>
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Password
-                    </label>
-                    <input
-                      type="password"
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
-                  </div>
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Re-enter password
-                    </label>
-                    <input
-                      type="password"
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    />
-                  </div>
-                  <div className="mb-4">
-                    <input type="checkbox" className="mr-2 leading-tight" />
-                    <span className="text-sm">I acknowledge that I have read and agree to the <Link href="/terms" className="text-blue-500">terms and conditions</Link>.</span>
-                  </div>
-                  <div className="mb-4">
-                    <input type="checkbox" className="mr-2 leading-tight" />
-                    <span className="text-sm">Receive email notifications on confirmations or disputes of my belt rank</span>
-                  </div>
-                  <div className="mb-4">
-                    <input type="checkbox" className="mr-2 leading-tight" />
-                    <span className="text-sm">Receive occasional newsletters from Judo-Chain</span>
-                  </div>
-                  <button
-                    type="submit"
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                  >
-                    Register
-                  </button>
-                </form>
+                )}
               </div>
             </div>
           </div>
