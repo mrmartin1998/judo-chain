@@ -15,22 +15,38 @@ const Navbar = () => {
       const accounts = await web3.eth.getAccounts();
       if (accounts.length > 0) {
         setAccount(accounts[0]);
+        checkUserRegistration(accounts[0]);
       }
 
       window.ethereum.on('accountsChanged', function (accounts) {
         setAccount(accounts[0]);
+        checkUserRegistration(accounts[0]);
       });
+    };
+
+    const checkUserRegistration = async (address) => {
+      try {
+        const judoka = await contract.methods.getJudoka(address).call();
+        if (!judoka.isRegistered && router.pathname !== "/register") {
+          router.push('/register');
+        } else if (judoka.isRegistered && router.pathname === "/register") {
+          router.push('/profile');
+        }
+      } catch (error) {
+        console.error("Error checking user registration:", error);
+      }
     };
 
     if (window.ethereum) {
       loadAccount();
     }
-  }, []);
+  }, [router]);
 
   const handleConnectWallet = async () => {
     try {
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
       setAccount(accounts[0]);
+      checkUserRegistration(accounts[0]);
     } catch (error) {
       console.error("User denied account access");
     }
@@ -59,6 +75,9 @@ const Navbar = () => {
               <div className="flex space-x-4">
                 <Link href="/" className="text-gray-900 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
                   Home
+                </Link>
+                <Link href="/main" className="text-gray-900 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
+                  Main Dapp
                 </Link>
                 <Link href="/profile" className="text-gray-900 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
                   Profile

@@ -3,6 +3,7 @@
 import Head from 'next/head';
 import dynamic from 'next/dynamic';
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import web3 from './utils/web3';
 import contract from './utils/contract';
 
@@ -11,6 +12,7 @@ const Navbar = dynamic(() => import('./components/Navbar'), { ssr: false });
 export default function Home() {
   const [account, setAccount] = useState('');
   const [isRegistered, setIsRegistered] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const loadAccount = async () => {
@@ -54,6 +56,10 @@ export default function Home() {
     } catch (error) {
       console.error("Error registering judoka:", error);
     }
+  };
+
+  const goToDapp = () => {
+    router.push('/main');
   };
 
   return (
@@ -106,6 +112,12 @@ export default function Home() {
                     <div className="flex flex-col items-center">
                       <p className="text-lg mb-4 text-gray-600">Connected wallet: {account}</p>
                       <p className="text-lg mb-4 text-gray-600">User is registered</p>
+                      <button
+                        onClick={goToDapp}
+                        className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                      >
+                        Go to Dapp
+                      </button>
                     </div>
                   ) : (
                     <form onSubmit={handleRegister}>
