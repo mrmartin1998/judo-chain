@@ -1,0 +1,27 @@
+Detailed Smart Contract Plan
+
+UserManagement.sol:
+Functions: registerUser, loginUser, editProfile, getUserProfile
+Data: User profiles, authentication data
+
+BeltVerification.sol:
+Inherits: UserManagement.sol
+Functions: requestVerification, getVerificationStatus, verifyUser
+Data: Verification requests, statuses
+
+Voting.sol:
+Inherits: BeltVerification.sol
+Functions: createVote, voteOnVerification, getVoteResults
+Data: Voting data, results
+
+EventManagement.sol:
+Functions: createEvent, editEvent, deleteEvent, getEventDetails
+Data: Event data
+
+TrainingLog.sol:
+Functions: logTrainingSession, getTrainingLogs
+Data: Training sessions, logs
+
+Security.sol:
+Functions: enableTwoFactorAuth, verifyTwoFactorAuth
+Data: Security settings
