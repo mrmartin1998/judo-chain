@@ -1,5 +1,9 @@
+//"use client";
+
 import Head from 'next/head';
-import Navbar from './components/Navbar';
+import dynamic from 'next/dynamic';
+
+const Navbar = dynamic(() => import('./components/Navbar'), { ssr: false });
 
 export default function Home() {
   return (
