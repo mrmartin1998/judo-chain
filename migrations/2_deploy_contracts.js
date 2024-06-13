@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
-const CONTRACT= artifacts.require("CONTRACT");
+const JudokaRegistry= artifacts.require("JudokaRegistry");
 
 module.exports = function (deployer) {
-  deployer.deploy(CONTRACT);
+  deployer.deploy(JudokaRegistry);
 };

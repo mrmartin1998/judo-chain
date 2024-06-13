@@ -2,10 +2,13 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import web3 from '../utils/web3';
+import contract from '../utils/contract';
 
 const Navbar = () => {
   const [account, setAccount] = useState('');
+  const router = useRouter();
 
   useEffect(() => {
     const loadAccount = async () => {
@@ -56,9 +59,6 @@ const Navbar = () => {
               <div className="flex space-x-4">
                 <Link href="/" className="text-gray-900 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
                   Home
-                </Link>
-                <Link href="/register" className="text-gray-900 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
-                  Register
                 </Link>
                 <Link href="/profile" className="text-gray-900 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
                   Profile
