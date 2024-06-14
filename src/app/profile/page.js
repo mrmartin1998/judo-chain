@@ -89,9 +89,11 @@ export default function Profile() {
           {/* Promotion History */}
           <div className="bg-white shadow rounded-lg p-6 col-span-3">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Promotion History</h2>
-            <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-              Update Promotion History
-            </button>
+            <Link href="/edit/promotion-history" legacyBehavior>
+              <a className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                Update Promotion History
+              </a>
+            </Link>
           </div>
 
           {/* Votes Received */}
