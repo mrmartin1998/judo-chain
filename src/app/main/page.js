@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import Navbar from '../components/Navbar'; // Ensure the Navbar is imported
+import Navbar from '../components/Navbar';
 import web3 from '../utils/web3';
 import contract from '../utils/contract';
 
@@ -40,7 +40,7 @@ export default function Main() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <Navbar /> {/* Include the Navbar at the top */}
+      <Navbar />
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <header className="bg-white shadow-md mb-6">
           <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
@@ -51,8 +51,19 @@ export default function Main() {
           {/* Profile Section */}
           <div className="col-span-1 bg-white shadow rounded-lg p-6">
             <h2 className="text-xl font-bold mb-4">Profile</h2>
-            <p className="text-gray-700"><strong>Name:</strong> {profileData.name || 'N/A'}</p>
-            <p className="text-gray-700"><strong>Belt Level:</strong> {profileData.beltLevel || 'N/A'}</p>
+            <div className="flex flex-col items-center">
+              <div className="w-24 h-24 rounded-full bg-gray-200 mb-4"></div>
+              <p className="text-gray-700"><strong>Name:</strong> {profileData.name || 'N/A'}</p>
+              <p className="text-gray-700"><strong>Belt Level:</strong> {profileData.beltLevel || 'N/A'}</p>
+              <div className="mt-4 flex flex-col space-y-2">
+                <Link href="/training-history" legacyBehavior>
+                  <a className="bg-blue-500 text-white py-2 px-4 rounded">View training history</a>
+                </Link>
+                <Link href="/profile" legacyBehavior>
+                  <a className="bg-green-500 text-white py-2 px-4 rounded">View full profile</a>
+                </Link>
+              </div>
+            </div>
           </div>
 
           {/* Welcome Section */}
@@ -75,7 +86,7 @@ export default function Main() {
             <ul className="list-disc list-inside text-gray-700">
               {topics.length > 0 ? topics.map(topic => (
                 <li key={topic.id} className="mb-2">
-                  <Link href={`/forum/topic/${topic.id}`}>
+                  <Link href={`/forum/topic/${topic.id}`} legacyBehavior>
                     <a className="text-blue-500 hover:underline">{topic.title}</a>
                   </Link>
                 </li>
