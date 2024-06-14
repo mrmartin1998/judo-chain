@@ -58,10 +58,6 @@ export default function Home() {
     }
   };
 
-  const goToDapp = () => {
-    router.push('/main');
-  };
-
   return (
     <div className="min-h-screen bg-gray-100">
       <Head>
@@ -113,7 +109,7 @@ export default function Home() {
                       <p className="text-lg mb-4 text-gray-600">Connected wallet: {account}</p>
                       <p className="text-lg mb-4 text-gray-600">User is registered</p>
                       <button
-                        onClick={goToDapp}
+                        onClick={() => router.push('/main')}
                         className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                       >
                         Go to Dapp
