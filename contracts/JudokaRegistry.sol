@@ -32,4 +32,18 @@ contract JudokaRegistry {
     function getJudoka(address _judokaAddress) public view returns (Judoka memory) {
         return judokas[_judokaAddress];
     }
+
+    function updateJudoka(
+        string memory _firstName,
+        string memory _lastName,
+        string memory _email,
+        string memory _beltLevel
+    ) public {
+        require(judokas[msg.sender].isRegistered, "Judoka is not registered.");
+        
+        judokas[msg.sender].firstName = _firstName;
+        judokas[msg.sender].lastName = _lastName;
+        judokas[msg.sender].email = _email;
+        judokas[msg.sender].beltLevel = _beltLevel;
+    }
 }
