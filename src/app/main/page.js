@@ -13,22 +13,34 @@ export default function Main() {
 
   useEffect(() => {
     const loadAccount = async () => {
-      const accounts = await web3.eth.getAccounts();
-      if (accounts.length > 0) {
-        setAccount(accounts[0]);
-        fetchProfileData(accounts[0]);
+      try {
+        const accounts = await web3.eth.getAccounts();
+        if (accounts.length > 0) {
+          setAccount(accounts[0]);
+          fetchProfileData(accounts[0]);
+        }
+      } catch (error) {
+        console.error("Error loading accounts:", error);
       }
     };
 
     const fetchProfileData = async (address) => {
-      const data = await contract.methods.getJudoka(address).call();
-      setProfileData(data);
+      try {
+        const data = await contract.methods.getJudoka(address).call();
+        setProfileData(data);
+      } catch (error) {
+        console.error("Error fetching profile data:", error);
+      }
     };
 
     const fetchForumTopics = async () => {
-      const response = await fetch('/api/forum/topics'); // Replace with actual API endpoint
-      const data = await response.json();
-      setTopics(data);
+      try {
+        const response = await fetch('/api/forum/topics'); // Replace with actual API endpoint
+        const data = await response.json();
+        setTopics(data);
+      } catch (error) {
+        console.error("Error fetching forum topics:", error);
+      }
     };
 
     if (window.ethereum) {
@@ -53,7 +65,7 @@ export default function Main() {
             <h2 className="text-xl font-bold mb-4">Profile</h2>
             <div className="flex flex-col items-center">
               <div className="w-24 h-24 rounded-full bg-gray-200 mb-4"></div>
-              <p className="text-gray-700"><strong>Name:</strong> {profileData.name || 'N/A'}</p>
+              <p className="text-gray-700"><strong>Name:</strong> {`${profileData.firstName || 'N/A'} ${profileData.lastName || ''}`}</p>
               <p className="text-gray-700"><strong>Belt Level:</strong> {profileData.beltLevel || 'N/A'}</p>
               <div className="mt-4 flex flex-col space-y-2">
                 <Link href="/training-history" legacyBehavior>
