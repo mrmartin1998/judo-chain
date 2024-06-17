@@ -16,6 +16,7 @@ export default function Profile() {
     promotionDate: '',
     gym: ''
   });
+  const [promotionHistory, setPromotionHistory] = useState([]);
 
   useEffect(() => {
     const loadAccount = async () => {
@@ -23,6 +24,7 @@ export default function Profile() {
       if (accounts.length > 0) {
         setAccount(accounts[0]);
         fetchProfileData(accounts[0]);
+        fetchPromotionHistory(accounts[0]);
       }
     };
 
@@ -32,10 +34,15 @@ export default function Profile() {
         firstName: data.firstName,
         lastName: data.lastName,
         email: data.email,
-        beltLevel: data.beltLevel,
-        promotionDate: data.promotionDate,
-        gym: data.gym
+        beltLevel: data.promotions[data.promotions.length - 1].beltLevel, // get the latest belt level
+        promotionDate: data.promotions[data.promotions.length - 1].promotionDate, // get the latest promotion date
+        gym: data.promotions[data.promotions.length - 1].gym // get the latest gym
       });
+    };
+
+    const fetchPromotionHistory = async (address) => {
+      const history = await contract.methods.getJudokaPromotions(address).call();
+      setPromotionHistory(history.reverse()); // reverse to show the most recent first
     };
 
     if (window.ethereum) {
@@ -53,7 +60,6 @@ export default function Profile() {
           </div>
         </header>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Profile Picture and Verification Status */}
           <div className="bg-white shadow rounded-lg p-6">
             <div className="flex flex-col items-center">
               <div className="w-24 h-24 rounded-full bg-gray-200 mb-4"></div>
@@ -67,7 +73,6 @@ export default function Profile() {
             </div>
           </div>
 
-          {/* Wall */}
           <div className="bg-white shadow rounded-lg p-6 col-span-2">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Wall</h2>
             <div className="bg-gray-100 p-4 rounded-lg">
@@ -82,7 +87,6 @@ export default function Profile() {
             </div>
           </div>
 
-          {/* Gallery */}
           <div className="bg-white shadow rounded-lg p-6 col-span-3">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Gallery</h2>
             <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
@@ -90,13 +94,16 @@ export default function Profile() {
             </button>
           </div>
 
-          {/* Promotion History */}
           <div className="bg-white shadow rounded-lg p-6 col-span-3">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Promotion History</h2>
             <ul>
-              <li className="mb-2"><strong>Belt Level:</strong> <span className="text-black">{profileData.beltLevel}</span></li>
-              <li className="mb-2"><strong>Promotion Date:</strong> <span className="text-black">{profileData.promotionDate}</span></li>
-              <li className="mb-4"><strong>Gym:</strong> <span className="text-black">{profileData.gym}</span></li>
+              {promotionHistory.map((promotion, index) => (
+                <li key={index} className="mb-4">
+                  <p><strong>Belt Level:</strong> {promotion.beltLevel}</p>
+                  <p><strong>Promotion Date:</strong> {promotion.promotionDate}</p>
+                  <p><strong>Gym:</strong> {promotion.gym}</p>
+                </li>
+              ))}
             </ul>
             <Link href="/edit/promotion-history" legacyBehavior>
               <a className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4">
@@ -105,19 +112,16 @@ export default function Profile() {
             </Link>
           </div>
 
-          {/* Votes Received */}
           <div className="bg-white shadow rounded-lg p-6 col-span-3">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Votes Received</h2>
             <p className="text-gray-700">Voting not yet open for your profile!</p>
           </div>
 
-          {/* Recent Training History */}
           <div className="bg-white shadow rounded-lg p-6 col-span-3">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Recent Training History</h2>
             <p className="text-gray-700">No training history logged for this user</p>
           </div>
 
-          {/* Medals */}
           <div className="bg-white shadow rounded-lg p-6 col-span-3">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Medals</h2>
             <p className="text-gray-700">No medals recorded</p>
@@ -126,7 +130,6 @@ export default function Profile() {
             </button>
           </div>
 
-          {/* Competition Record */}
           <div className="bg-white shadow rounded-lg p-6 col-span-3">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Competition Record</h2>
             <p className="text-gray-700">No matches recorded</p>
@@ -135,7 +138,6 @@ export default function Profile() {
             </button>
           </div>
 
-          {/* Achievements */}
           <div className="bg-white shadow rounded-lg p-6 col-span-3">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Achievements</h2>
             <p className="text-gray-700">No achievements recorded</p>
