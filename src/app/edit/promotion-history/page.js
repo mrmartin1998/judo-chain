@@ -10,6 +10,7 @@ import Sidebar from '../../components/Sidebar';
 
 const PromotionHistory = () => {
   const [judoka, setJudoka] = useState({});
+  const [promotionHistory, setPromotionHistory] = useState([]);
   const [newPromotion, setNewPromotion] = useState({
     beltLevel: '',
     promotionDate: null,
@@ -22,6 +23,8 @@ const PromotionHistory = () => {
       if (accounts.length > 0) {
         const data = await contract.methods.getJudoka(accounts[0]).call();
         setJudoka(data);
+        const history = await contract.methods.getJudokaPromotions(accounts[0]).call(); // Fetch promotion history
+        setPromotionHistory(history);
       }
     };
     loadJudoka();
@@ -39,12 +42,9 @@ const PromotionHistory = () => {
         newPromotion.gym
       ).send({ from: accounts[0] });
 
-      setJudoka({
-        ...judoka,
-        beltLevel: newPromotion.beltLevel,
-        promotionDate: newPromotion.promotionDate.toISOString().split('T')[0],
-        gym: newPromotion.gym
-      });
+      const updatedHistory = await contract.methods.getJudokaPromotions(accounts[0]).call();
+      setPromotionHistory(updatedHistory);
+
       setNewPromotion({ beltLevel: '', promotionDate: null, gym: '' });
     }
   };
@@ -85,12 +85,7 @@ const PromotionHistory = () => {
                 popperClassName="react-datepicker-popper"
                 calendarClassName="react-datepicker"
                 dayClassName={() => "hover:bg-gray-200"}
-                customInput={
-                  <input
-                    type="text"
-                    style={{ color: 'black', backgroundColor: 'white' }}
-                  />
-                }
+                customInput={<input type="text" style={{ color: 'black', backgroundColor: 'white' }} />}
               />
             </div>
             <div className="mb-4">
@@ -111,11 +106,13 @@ const PromotionHistory = () => {
             </button>
             <h3 className="text-xl font-bold mt-6 text-black">Existing Information</h3>
             <ul className="mt-4 text-black">
-              <li className="border-b border-gray-200 py-2">
-                <p><strong>Belt Level:</strong> {judoka.beltLevel}</p>
-                <p><strong>Promotion Date:</strong> {judoka.promotionDate}</p>
-                <p><strong>Gym:</strong> {judoka.gym}</p>
-              </li>
+              {promotionHistory.map((promotion, index) => (
+                <li key={index} className="border-b border-gray-200 py-2">
+                  <p><strong>Belt Level:</strong> {promotion.beltLevel}</p>
+                  <p><strong>Promotion Date:</strong> {promotion.promotionDate}</p>
+                  <p><strong>Gym:</strong> {promotion.gym}</p>
+                </li>
+              ))}
             </ul>
           </div>
         </main>

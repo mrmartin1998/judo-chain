@@ -2,14 +2,18 @@
 pragma solidity ^0.8.0;
 
 contract JudokaRegistry {
+    struct Promotion {
+        string beltLevel;
+        string promotionDate;
+        string gym;
+    }
+
     struct Judoka {
         string firstName;
         string lastName;
         string email;
-        string beltLevel;
-        string promotionDate;
-        string gym;
         bool isRegistered;
+        Promotion[] promotions;
     }
 
     mapping(address => Judoka) public judokas;
@@ -24,19 +28,26 @@ contract JudokaRegistry {
     ) public {
         require(!judokas[msg.sender].isRegistered, "Judoka is already registered.");
 
-        judokas[msg.sender] = Judoka({
-            firstName: _firstName,
-            lastName: _lastName,
-            email: _email,
+        Promotion memory initialPromotion = Promotion({
             beltLevel: _beltLevel,
             promotionDate: _promotionDate,
-            gym: _gym,
-            isRegistered: true
+            gym: _gym
         });
+
+        Judoka storage newJudoka = judokas[msg.sender];
+        newJudoka.firstName = _firstName;
+        newJudoka.lastName = _lastName;
+        newJudoka.email = _email;
+        newJudoka.isRegistered = true;
+        newJudoka.promotions.push(initialPromotion);
     }
 
     function getJudoka(address _judokaAddress) public view returns (Judoka memory) {
         return judokas[_judokaAddress];
+    }
+
+    function getJudokaPromotions(address _judokaAddress) public view returns (Promotion[] memory) {
+        return judokas[_judokaAddress].promotions;
     }
 
     function updateJudoka(
@@ -52,8 +63,13 @@ contract JudokaRegistry {
         judokas[msg.sender].firstName = _firstName;
         judokas[msg.sender].lastName = _lastName;
         judokas[msg.sender].email = _email;
-        judokas[msg.sender].beltLevel = _beltLevel;
-        judokas[msg.sender].promotionDate = _promotionDate;
-        judokas[msg.sender].gym = _gym;
+
+        Promotion memory newPromotion = Promotion({
+            beltLevel: _beltLevel,
+            promotionDate: _promotionDate,
+            gym: _gym
+        });
+
+        judokas[msg.sender].promotions.push(newPromotion);
     }
 }
