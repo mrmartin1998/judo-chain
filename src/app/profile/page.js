@@ -30,19 +30,23 @@ export default function Profile() {
 
     const fetchProfileData = async (address) => {
       const data = await contract.methods.getJudoka(address).call();
-      setProfileData({
-        firstName: data.firstName,
-        lastName: data.lastName,
-        email: data.email,
-        beltLevel: data.promotions[data.promotions.length - 1].beltLevel, // get the latest belt level
-        promotionDate: data.promotions[data.promotions.length - 1].promotionDate, // get the latest promotion date
-        gym: data.promotions[data.promotions.length - 1].gym // get the latest gym
-      });
+      if (data.promotions.length > 0) {
+        const latestPromotion = data.promotions[data.promotions.length - 1];
+        setProfileData({
+          firstName: data.firstName,
+          lastName: data.lastName,
+          email: data.email,
+          beltLevel: latestPromotion.beltLevel,
+          promotionDate: latestPromotion.promotionDate,
+          gym: latestPromotion.gym
+        });
+      }
     };
 
     const fetchPromotionHistory = async (address) => {
       const history = await contract.methods.getJudokaPromotions(address).call();
-      setPromotionHistory(history.reverse()); // reverse to show the most recent first
+      const filteredHistory = history.filter(promotion => promotion.beltLevel && promotion.promotionDate && promotion.gym);
+      setPromotionHistory(filteredHistory.reverse()); // reverse to show the most recent first
     };
 
     if (window.ethereum) {
