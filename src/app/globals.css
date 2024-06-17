@@ -31,3 +31,22 @@ body {
     text-wrap: balance;
   }
 }
+
+/* Custom styles for inputs */
+input,
+select {
+  color: black !important;
+  background-color: white !important;
+}
+
+.react-datepicker-wrapper,
+.react-datepicker__input-container,
+.react-datepicker__input-container input {
+  color: black !important;
+  background-color: white !important;
+}
+
+.react-datepicker {
+  color: black !important;
+  background-color: white !important;
+}

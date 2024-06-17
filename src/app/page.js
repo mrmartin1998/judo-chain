@@ -50,7 +50,7 @@ export default function Home() {
     const beltLevel = e.target.beltLevel.value;
 
     try {
-      await contract.methods.registerJudoka(firstName, lastName, email, beltLevel)
+      await contract.methods.registerJudoka(firstName, lastName, email, beltLevel, "", "")
         .send({ from: account });
       setIsRegistered(true);
     } catch (error) {
@@ -159,11 +159,13 @@ export default function Home() {
                           className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                           required
                         >
-                          <option>White belt</option>
-                          <option>Blue belt</option>
-                          <option>Purple belt</option>
-                          <option>Brown belt</option>
-                          <option>Black belt</option>
+                          <option>White</option>
+                          <option>Yellow</option>
+                          <option>Orange</option>
+                          <option>Green</option>
+                          <option>Blue</option>
+                          <option>Brown</option>
+                          <option>Black</option>
                         </select>
                       </div>
                       <button

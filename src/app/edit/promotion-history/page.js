@@ -1,89 +1,116 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import web3 from '../../utils/web3';
 import contract from '../../utils/contract';
 import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/Sidebar';
 
 const PromotionHistory = () => {
-  const [promotions, setPromotions] = useState([]);
+  const [judoka, setJudoka] = useState({});
   const [newPromotion, setNewPromotion] = useState({
     beltLevel: '',
-    date: '',
-    location: ''
+    promotionDate: null,
+    gym: ''
   });
 
   useEffect(() => {
-    const loadPromotions = async () => {
+    const loadJudoka = async () => {
       const accounts = await web3.eth.getAccounts();
       if (accounts.length > 0) {
-        const data = await contract.methods.getPromotions(accounts[0]).call();
-        setPromotions(data);
+        const data = await contract.methods.getJudoka(accounts[0]).call();
+        setJudoka(data);
       }
     };
-    loadPromotions();
+    loadJudoka();
   }, []);
 
-  const handleAddPromotion = async () => {
+  const handleUpdateJudoka = async () => {
     const accounts = await web3.eth.getAccounts();
     if (accounts.length > 0) {
-      await contract.methods.addPromotion(newPromotion.beltLevel, newPromotion.date, newPromotion.location).send({ from: accounts[0] });
-      setPromotions([...promotions, newPromotion]);
-      setNewPromotion({ beltLevel: '', date: '', location: '' });
+      await contract.methods.updateJudoka(
+        judoka.firstName,
+        judoka.lastName,
+        judoka.email,
+        newPromotion.beltLevel,
+        newPromotion.promotionDate.toISOString().split('T')[0], // convert date to string
+        newPromotion.gym
+      ).send({ from: accounts[0] });
+
+      setJudoka({
+        ...judoka,
+        beltLevel: newPromotion.beltLevel,
+        promotionDate: newPromotion.promotionDate.toISOString().split('T')[0],
+        gym: newPromotion.gym
+      });
+      setNewPromotion({ beltLevel: '', promotionDate: null, gym: '' });
     }
   };
 
   return (
     <div className="flex min-h-screen bg-gray-100">
       <Sidebar />
-      <div className="flex-1 ml-64"> {/* Adjusted margin to make space for sidebar */}
+      <div className="flex-1 ml-64">
         <Navbar />
         <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
           <div className="bg-white p-4 shadow rounded">
             <h2 className="text-2xl font-bold mb-4">Promotion History</h2>
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700">Belt Level</label>
-              <input
-                type="text"
+              <select
                 value={newPromotion.beltLevel}
                 onChange={(e) => setNewPromotion({ ...newPromotion, beltLevel: e.target.value })}
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                style={{ color: 'black' }}
+              >
+                <option value="">Select Belt Level</option>
+                <option value="White">White</option>
+                <option value="Yellow">Yellow</option>
+                <option value="Orange">Orange</option>
+                <option value="Green">Green</option>
+                <option value="Blue">Blue</option>
+                <option value="Brown">Brown</option>
+                <option value="Black">Black</option>
+              </select>
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700">Promotion Date</label>
+              <DatePicker
+                selected={newPromotion.promotionDate}
+                onChange={(date) => setNewPromotion({ ...newPromotion, promotionDate: date })}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                dateFormat="yyyy-MM-dd"
+                style={{ color: 'black', backgroundColor: 'white' }}
+                popperClassName="react-datepicker-popper"
+                calendarClassName="react-datepicker"
+                dayClassName={() => "hover:bg-gray-200"}
               />
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Date</label>
+              <label className="block text-sm font-medium text-gray-700">Gym</label>
               <input
                 type="text"
-                value={newPromotion.date}
-                onChange={(e) => setNewPromotion({ ...newPromotion, date: e.target.value })}
+                value={newPromotion.gym}
+                onChange={(e) => setNewPromotion({ ...newPromotion, gym: e.target.value })}
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Location</label>
-              <input
-                type="text"
-                value={newPromotion.location}
-                onChange={(e) => setNewPromotion({ ...newPromotion, location: e.target.value })}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                style={{ color: 'black' }}
               />
             </div>
             <button
-              onClick={handleAddPromotion}
+              onClick={handleUpdateJudoka}
               className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             >
-              Add Promotion
+              Update Judoka
             </button>
-            <h3 className="text-xl font-bold mt-6">Existing Promotions</h3>
+            <h3 className="text-xl font-bold mt-6">Existing Information</h3>
             <ul className="mt-4">
-              {promotions.map((promotion, index) => (
-                <li key={index} className="border-b border-gray-200 py-2">
-                  <p><strong>Belt Level:</strong> {promotion.beltLevel}</p>
-                  <p><strong>Date:</strong> {promotion.date}</p>
-                  <p><strong>Location:</strong> {promotion.location}</p>
-                </li>
-              ))}
+              <li className="border-b border-gray-200 py-2">
+                <p><strong>Belt Level:</strong> {judoka.beltLevel}</p>
+                <p><strong>Promotion Date:</strong> {judoka.promotionDate}</p>
+                <p><strong>Gym:</strong> {judoka.gym}</p>
+              </li>
             </ul>
           </div>
         </main>
