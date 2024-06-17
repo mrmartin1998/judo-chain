@@ -2,23 +2,25 @@ import Link from 'next/link';
 
 const Sidebar = () => {
   return (
-    <div className="w-64 h-screen bg-gray-800 text-white fixed">
-      <div className="p-4 text-2xl font-bold">Edit Profile</div>
-      <nav className="flex-1 p-4">
-        <ul>
-          <li className="mb-2">
+    <div className="fixed top-0 left-0 h-full w-64 bg-white shadow-md">
+      <div className="px-4 py-6">
+        <h2 className="text-3xl font-bold text-gray-900">Edit Profile</h2>
+      </div>
+      <nav className="flex-1 px-4 pb-4">
+        <ul className="space-y-4">
+          <li>
             <Link href="/edit/promotion-history" legacyBehavior>
-              <a className="block p-2 bg-gray-700 rounded hover:bg-gray-600">Promotion History</a>
+              <a className="text-gray-900 hover:bg-gray-200 px-3 py-2 rounded-md block font-medium">Promotion History</a>
             </Link>
           </li>
-          <li className="mb-2">
+          <li>
             <Link href="/edit/academy-affiliation" legacyBehavior>
-              <a className="block p-2 bg-gray-700 rounded hover:bg-gray-600">Academy and Affiliation</a>
+              <a className="text-gray-900 hover:bg-gray-200 px-3 py-2 rounded-md block font-medium">Academy and Affiliation</a>
             </Link>
           </li>
-          <li className="mb-2">
+          <li>
             <Link href="/edit/gallery" legacyBehavior>
-              <a className="block p-2 bg-gray-700 rounded hover:bg-gray-600">Gallery</a>
+              <a className="text-gray-900 hover:bg-gray-200 px-3 py-2 rounded-md block font-medium">Gallery</a>
             </Link>
           </li>
           {/* Add more sidebar items as needed */}

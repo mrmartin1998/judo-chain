@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import Sidebar from '../../components/Sidebar';
-import Navbar from '../../components/Navbar';
 import { useEffect, useState } from 'react';
 import web3 from '../../utils/web3';
 import contract from '../../utils/contract';
+import Navbar from '../../components/Navbar';
+import Sidebar from '../../components/Sidebar';
 
 const PromotionHistory = () => {
   const [promotions, setPromotions] = useState([]);
@@ -35,9 +35,9 @@ const PromotionHistory = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex">
+    <div className="flex min-h-screen bg-gray-100">
       <Sidebar />
-      <div className="flex-1">
+      <div className="flex-1 ml-64"> {/* Adjusted margin to make space for sidebar */}
         <Navbar />
         <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
           <div className="bg-white p-4 shadow rounded">
