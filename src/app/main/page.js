@@ -8,7 +8,11 @@ import contract from '../utils/contract';
 
 export default function Main() {
   const [account, setAccount] = useState('');
-  const [profileData, setProfileData] = useState({});
+  const [profileData, setProfileData] = useState({
+    firstName: '',
+    lastName: '',
+    beltLevel: 'N/A', // Initialize with 'N/A'
+  });
   const [topics, setTopics] = useState([]);
 
   useEffect(() => {
@@ -27,7 +31,11 @@ export default function Main() {
     const fetchProfileData = async (address) => {
       try {
         const data = await contract.methods.getJudoka(address).call();
-        setProfileData(data);
+        setProfileData({
+          firstName: data.firstName,
+          lastName: data.lastName,
+          beltLevel: data.promotions.length > 0 ? data.promotions[data.promotions.length - 1].beltLevel : 'N/A', // Fetch the latest belt level
+        });
       } catch (error) {
         console.error("Error fetching profile data:", error);
       }
