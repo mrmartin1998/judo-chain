@@ -7,7 +7,7 @@ contract JudokaRegistry {
         string lastName;
         string email;
         string beltLevel;
-        string promotionDate; // store the date as a string
+        string promotionDate;
         string gym;
         bool isRegistered;
     }
@@ -53,7 +53,7 @@ contract JudokaRegistry {
         judokas[msg.sender].lastName = _lastName;
         judokas[msg.sender].email = _email;
         judokas[msg.sender].beltLevel = _beltLevel;
-        judokas[msg.sender].promotionDate = _promotionDate; // update the date as a string
+        judokas[msg.sender].promotionDate = _promotionDate;
         judokas[msg.sender].gym = _gym;
     }
 }

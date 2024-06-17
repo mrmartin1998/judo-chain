@@ -1,7 +1,7 @@
 import web3 from './web3';
 import JudokaRegistry from '../../../build/contracts/JudokaRegistry.json';
 
-const contractAddress = '0x287f287E19e7B56d471cBBdeeb1B05565Dd3210a';
+const contractAddress = '0x4d921fBedBD54aD11470Abec49Ce9D2685607FC8';
 
 const instance = new web3.eth.Contract(
     JudokaRegistry.abi, 

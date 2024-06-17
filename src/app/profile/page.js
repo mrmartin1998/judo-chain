@@ -12,7 +12,9 @@ export default function Profile() {
     firstName: '',
     lastName: '',
     email: '',
-    beltLevel: ''
+    beltLevel: '',
+    promotionDate: '',
+    gym: ''
   });
 
   useEffect(() => {
@@ -30,7 +32,9 @@ export default function Profile() {
         firstName: data.firstName,
         lastName: data.lastName,
         email: data.email,
-        beltLevel: data.beltLevel
+        beltLevel: data.beltLevel,
+        promotionDate: data.promotionDate,
+        gym: data.gym
       });
     };
 
@@ -40,7 +44,7 @@ export default function Profile() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-100 text-black">
       <Navbar />
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <header className="bg-white shadow-md mb-6">
@@ -68,7 +72,7 @@ export default function Profile() {
             <h2 className="text-xl font-bold text-gray-900 mb-4">Wall</h2>
             <div className="bg-gray-100 p-4 rounded-lg">
               <textarea
-                className="w-full bg-white p-2 rounded-lg border border-gray-300"
+                className="w-full bg-white p-2 rounded-lg border border-gray-300 text-black"
                 rows="3"
                 placeholder="Leave a message..."
               ></textarea>
@@ -89,8 +93,13 @@ export default function Profile() {
           {/* Promotion History */}
           <div className="bg-white shadow rounded-lg p-6 col-span-3">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Promotion History</h2>
+            <ul>
+              <li className="mb-2"><strong>Belt Level:</strong> <span className="text-black">{profileData.beltLevel}</span></li>
+              <li className="mb-2"><strong>Promotion Date:</strong> <span className="text-black">{profileData.promotionDate}</span></li>
+              <li className="mb-4"><strong>Gym:</strong> <span className="text-black">{profileData.gym}</span></li>
+            </ul>
             <Link href="/edit/promotion-history" legacyBehavior>
-              <a className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+              <a className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4">
                 Update Promotion History
               </a>
             </Link>
