@@ -14,12 +14,12 @@
     --foreground-rgb: 255, 255, 255;
     --background-start-rgb: 0, 0, 0;
     --background-end-rgb: 0, 0, 0;
-    --default-text-color: rgb(255, 255, 255); /* Text color for dark mode */
+    --default-text-color: rgb(255, 255, 255); /* Default text color for dark mode */
   }
 }
 
 body {
-  color: var(--default-text-color); /* Universal text color */
+  color: var(--default-text-color); /* Use default text color */
   background: linear-gradient(
       to bottom,
       transparent,
@@ -28,31 +28,23 @@ body {
     rgb(var(--background-start-rgb));
 }
 
-input, select, textarea {
-  color: var(--default-text-color); /* Default text color for inputs, selects, and textareas */
+/* Ensure input, select, and textarea fields have the correct text color 
+.input-custom, .select-custom, .textarea-custom {
+  color: var(--default-text-color) !important;
+  background-color: white !important;
 }
-
+*/
+/* Custom styles for datepicker 
+.react-datepicker-wrapper,
+.react-datepicker__input-container,
+.react-datepicker__input-container input,
+.react-datepicker {
+  color: var(--default-text-color) !important;
+  background-color: white !important;
+}
+*/
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
-}
-
-/* Custom styles for inputs */
-input,
-select {
-  color: var(--default-text-color) !important;
-  background-color: white !important;
-}
-
-.react-datepicker-wrapper,
-.react-datepicker__input-container,
-.react-datepicker__input-container input {
-  color: var(--default-text-color) !important;
-  background-color: white !important;
-}
-
-.react-datepicker {
-  color: var(--default-text-color) !important;
-  background-color: white !important;
 }

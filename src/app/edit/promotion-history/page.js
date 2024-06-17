@@ -56,14 +56,14 @@ const PromotionHistory = () => {
         <Navbar />
         <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
           <div className="bg-white p-4 shadow rounded">
-            <h2 className="text-2xl font-bold mb-4">Promotion History</h2>
+            <h2 className="text-2xl font-bold mb-4 text-black">Promotion History</h2>
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700">Belt Level</label>
               <select
                 value={newPromotion.beltLevel}
                 onChange={(e) => setNewPromotion({ ...newPromotion, beltLevel: e.target.value })}
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                style={{ color: 'black' }}
+                style={{ color: 'black', backgroundColor: 'white' }}
               >
                 <option value="">Select Belt Level</option>
                 <option value="White">White</option>
@@ -82,10 +82,15 @@ const PromotionHistory = () => {
                 onChange={(date) => setNewPromotion({ ...newPromotion, promotionDate: date })}
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                 dateFormat="yyyy-MM-dd"
-                style={{ color: 'black', backgroundColor: 'white' }}
                 popperClassName="react-datepicker-popper"
                 calendarClassName="react-datepicker"
                 dayClassName={() => "hover:bg-gray-200"}
+                customInput={
+                  <input
+                    type="text"
+                    style={{ color: 'black', backgroundColor: 'white' }}
+                  />
+                }
               />
             </div>
             <div className="mb-4">
@@ -95,7 +100,7 @@ const PromotionHistory = () => {
                 value={newPromotion.gym}
                 onChange={(e) => setNewPromotion({ ...newPromotion, gym: e.target.value })}
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                style={{ color: 'black' }}
+                style={{ color: 'black', backgroundColor: 'white' }}
               />
             </div>
             <button
@@ -104,8 +109,8 @@ const PromotionHistory = () => {
             >
               Update Judoka
             </button>
-            <h3 className="text-xl font-bold mt-6">Existing Information</h3>
-            <ul className="mt-4">
+            <h3 className="text-xl font-bold mt-6 text-black">Existing Information</h3>
+            <ul className="mt-4 text-black">
               <li className="border-b border-gray-200 py-2">
                 <p><strong>Belt Level:</strong> {judoka.beltLevel}</p>
                 <p><strong>Promotion Date:</strong> {judoka.promotionDate}</p>
