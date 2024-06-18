@@ -5,7 +5,6 @@ import Link from 'next/link';
 import Navbar from '../components/Navbar';
 import web3 from '../utils/web3';
 import contract from '../utils/contract';
-import judokaRegistryInstance from '../utils/contract'; // Correct import
 
 export default function Main() {
   const [account, setAccount] = useState('');
@@ -56,16 +55,16 @@ export default function Main() {
     const fetchAllJudokas = async () => {
       try {
         console.log("Fetching all judokas...");
-        console.log("Contract instance:", judokaRegistryInstance);
+        console.log("Contract instance:", contract);
 
         // Check if the method exists
-        if (judokaRegistryInstance.methods.getAllJudokas) {
-          const userAddresses = await judokaRegistryInstance.methods.getAllJudokas().call();
+        if (contract.methods.getAllJudokas) {
+          const userAddresses = await contract.methods.getAllJudokas().call();
           console.log("User addresses fetched:", userAddresses);
 
           const users = await Promise.all(
             userAddresses.map(async (address) => {
-              const user = await judokaRegistryInstance.methods.getJudoka(address).call();
+              const user = await contract.methods.getJudoka(address).call();
               console.log(`Fetched data for address ${address}:`, user);
               return {
                 address,
@@ -105,7 +104,7 @@ export default function Main() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Profile Section */}
           <div className="col-span-1 bg-white shadow rounded-lg p-6">
-            <h2 className="text-xl font-bold mb-4">Profile</h2>
+            <h2 className="text-xl font-bold mb-4 text-gray-900">Profile</h2>
             <div className="flex flex-col items-center">
               <div className="w-24 h-24 rounded-full bg-gray-200 mb-4"></div>
               <p className="text-gray-700"><strong>Name:</strong> {`${profileData.firstName || 'N/A'} ${profileData.lastName || ''}`}</p>
@@ -123,7 +122,7 @@ export default function Main() {
 
           {/* Welcome Section */}
           <div className="col-span-2 bg-white shadow rounded-lg p-6">
-            <h2 className="text-xl font-bold mb-4">Welcome to Judo-Chain</h2>
+            <h2 className="text-xl font-bold mb-4 text-gray-900">Welcome to Judo-Chain</h2>
             <p className="text-gray-700 mb-4">Your trusted platform for Judo belt verification.</p>
             <p className="text-gray-700 mb-4">Here you can manage your profile, participate in community voting, track your training progress, and more.</p>
             <p className="text-gray-700">Follow these steps to get started:</p>
@@ -137,7 +136,7 @@ export default function Main() {
 
           {/* Judoka List Section */}
           <div className="col-span-1 md:col-span-3 bg-white shadow rounded-lg p-6 mt-4">
-            <h2 className="text-xl font-bold mb-4">Registered Users</h2>
+            <h2 className="text-xl font-bold mb-4 text-gray-900">Registered Users</h2>
             <ul className="list-disc list-inside text-gray-700">
               {judokas.length > 0 ? (
                 judokas.map((judoka, index) => (
@@ -153,7 +152,7 @@ export default function Main() {
 
           {/* Forum Topics Section */}
           <div className="col-span-1 md:col-span-3 bg-white shadow rounded-lg p-6 mt-4">
-            <h2 className="text-xl font-bold mb-4">Latest Forum Topics</h2>
+            <h2 className="text-xl font-bold mb-4 text-gray-900">Latest Forum Topics</h2>
             <ul className="list-disc list-inside text-gray-700">
               {topics.length > 0 ? topics.map(topic => (
                 <li key={topic.id} className="mb-2">
