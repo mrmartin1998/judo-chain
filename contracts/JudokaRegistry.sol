@@ -18,6 +18,7 @@ contract JudokaRegistry {
     }
 
     mapping(address => Judoka) public judokas;
+    address[] public judokaAddresses;
 
     function registerJudoka(
         string memory _firstName,
@@ -44,6 +45,8 @@ contract JudokaRegistry {
         newJudoka.isRegistered = true;
         newJudoka.votingPower = votingPower;
         newJudoka.promotions.push(initialPromotion);
+
+        judokaAddresses.push(msg.sender);
     }
 
     function getVotingPower(string memory _beltLevel) public pure returns (uint256) {
@@ -72,6 +75,10 @@ contract JudokaRegistry {
 
     function getJudokaPromotions(address _judokaAddress) public view returns (Promotion[] memory) {
         return judokas[_judokaAddress].promotions;
+    }
+
+    function getAllJudokas() public view returns (address[] memory) {
+        return judokaAddresses;
     }
 
     function updateJudoka(
