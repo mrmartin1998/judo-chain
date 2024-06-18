@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Navbar from '../components/Navbar';
 import web3 from '../utils/web3';
 import contract from '../utils/contract';
+import judokaRegistryInstance from '../utils/contract'; // Correct import
 
 export default function Main() {
   const [account, setAccount] = useState('');
@@ -14,6 +15,7 @@ export default function Main() {
     beltLevel: 'N/A', // Initialize with 'N/A'
   });
   const [topics, setTopics] = useState([]);
+  const [judokas, setJudokas] = useState([]);
 
   useEffect(() => {
     const loadAccount = async () => {
@@ -51,11 +53,44 @@ export default function Main() {
       }
     };
 
+    const fetchAllJudokas = async () => {
+      try {
+        console.log("Fetching all judokas...");
+        console.log("Contract instance:", judokaRegistryInstance);
+
+        // Check if the method exists
+        if (judokaRegistryInstance.methods.getAllJudokas) {
+          const userAddresses = await judokaRegistryInstance.methods.getAllJudokas().call();
+          console.log("User addresses fetched:", userAddresses);
+
+          const users = await Promise.all(
+            userAddresses.map(async (address) => {
+              const user = await judokaRegistryInstance.methods.getJudoka(address).call();
+              console.log(`Fetched data for address ${address}:`, user);
+              return {
+                address,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                beltLevel: user.promotions.length > 0 ? user.promotions[user.promotions.length - 1].beltLevel : 'N/A',
+              };
+            })
+          );
+          console.log("Users fetched:", users);
+          setJudokas(users);
+        } else {
+          console.error("getAllJudokas method does not exist on the contract");
+        }
+      } catch (error) {
+        console.error("Error fetching judokas:", error);
+      }
+    };
+
     if (window.ethereum) {
       loadAccount();
     }
 
     fetchForumTopics();
+    fetchAllJudokas();
   }, []);
 
   return (
@@ -98,6 +133,22 @@ export default function Main() {
               <li>Engage with the community for voting.</li>
               <li>Track and update your training progress.</li>
             </ol>
+          </div>
+
+          {/* Judoka List Section */}
+          <div className="col-span-1 md:col-span-3 bg-white shadow rounded-lg p-6 mt-4">
+            <h2 className="text-xl font-bold mb-4">Registered Users</h2>
+            <ul className="list-disc list-inside text-gray-700">
+              {judokas.length > 0 ? (
+                judokas.map((judoka, index) => (
+                  <li key={index} className="mb-2">
+                    <span className="text-blue-500">{judoka.firstName} {judoka.lastName} - {judoka.beltLevel}</span>
+                  </li>
+                ))
+              ) : (
+                <p className="text-gray-700">No registered users found.</p>
+              )}
+            </ul>
           </div>
 
           {/* Forum Topics Section */}
