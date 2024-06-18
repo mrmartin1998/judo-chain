@@ -14,6 +14,7 @@ contract JudokaRegistry {
         string email;
         bool isRegistered;
         Promotion[] promotions;
+        uint256 votingPower;
     }
 
     mapping(address => Judoka) public judokas;
@@ -28,6 +29,8 @@ contract JudokaRegistry {
     ) public {
         require(!judokas[msg.sender].isRegistered, "Judoka is already registered.");
 
+        uint256 votingPower = getVotingPower(_beltLevel);
+
         Promotion memory initialPromotion = Promotion({
             beltLevel: _beltLevel,
             promotionDate: _promotionDate,
@@ -39,7 +42,28 @@ contract JudokaRegistry {
         newJudoka.lastName = _lastName;
         newJudoka.email = _email;
         newJudoka.isRegistered = true;
+        newJudoka.votingPower = votingPower;
         newJudoka.promotions.push(initialPromotion);
+    }
+
+    function getVotingPower(string memory _beltLevel) public pure returns (uint256) {
+        if (keccak256(abi.encodePacked((_beltLevel))) == keccak256(abi.encodePacked(("White")))) return 0;
+        if (keccak256(abi.encodePacked((_beltLevel))) == keccak256(abi.encodePacked(("Yellow")))) return 5;
+        if (keccak256(abi.encodePacked((_beltLevel))) == keccak256(abi.encodePacked(("Orange")))) return 10;
+        if (keccak256(abi.encodePacked((_beltLevel))) == keccak256(abi.encodePacked(("Green")))) return 20;
+        if (keccak256(abi.encodePacked((_beltLevel))) == keccak256(abi.encodePacked(("Blue")))) return 50;
+        if (keccak256(abi.encodePacked((_beltLevel))) == keccak256(abi.encodePacked(("Brown")))) return 100;
+        if (keccak256(abi.encodePacked((_beltLevel))) == keccak256(abi.encodePacked(("Black (1st Dan)")))) return 125;
+        if (keccak256(abi.encodePacked((_beltLevel))) == keccak256(abi.encodePacked(("Black (2nd Dan)")))) return 150;
+        if (keccak256(abi.encodePacked((_beltLevel))) == keccak256(abi.encodePacked(("Black (3rd Dan)")))) return 175;
+        if (keccak256(abi.encodePacked((_beltLevel))) == keccak256(abi.encodePacked(("Black (4th Dan)")))) return 200;
+        if (keccak256(abi.encodePacked((_beltLevel))) == keccak256(abi.encodePacked(("Black (5th Dan)")))) return 225;
+        if (keccak256(abi.encodePacked((_beltLevel))) == keccak256(abi.encodePacked(("Black (6th Dan)")))) return 250;
+        if (keccak256(abi.encodePacked((_beltLevel))) == keccak256(abi.encodePacked(("Black (7th Dan)")))) return 275;
+        if (keccak256(abi.encodePacked((_beltLevel))) == keccak256(abi.encodePacked(("Black (8th Dan)")))) return 300;
+        if (keccak256(abi.encodePacked((_beltLevel))) == keccak256(abi.encodePacked(("Black (9th Dan)")))) return 325;
+        if (keccak256(abi.encodePacked((_beltLevel))) == keccak256(abi.encodePacked(("Black (10th Dan)")))) return 350;
+        return 0;
     }
 
     function getJudoka(address _judokaAddress) public view returns (Judoka memory) {
