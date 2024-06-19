@@ -140,7 +140,9 @@ export default function Main() {
             <ul className="list-disc list-inside text-gray-700">
               {judokas.length > 0 ? judokas.map((judoka, index) => (
                 <li key={index} className="mb-2">
-                  <span className="text-blue-500">{judoka.firstName} {judoka.lastName} - {judoka.beltLevel}</span>
+                  <Link href={`/profile/${judoka.address}`} legacyBehavior>
+                    <a className="text-blue-500 hover:underline">{judoka.firstName} {judoka.lastName} - {judoka.beltLevel}</a>
+                  </Link>
                 </li>
               )) : (
                 <p className="text-gray-700">No registered users found.</p>
