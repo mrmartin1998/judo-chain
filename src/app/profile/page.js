@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import web3 from '../utils/web3';
-import { judokaRegistryContract } from '../utils/contract'; // Correct import
+import { judokaRegistryContract } from '../utils/contract';
 import Navbar from '../components/Navbar';
+import Profile from '../components/Profile';
 import Link from 'next/link';
 
-export default function Profile() {
+export default function ProfilePage() {
   const [account, setAccount] = useState('');
   const [profileData, setProfileData] = useState({
     firstName: '',
@@ -64,20 +65,9 @@ export default function Profile() {
           </div>
         </header>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="bg-white shadow rounded-lg p-6">
-            <div className="flex flex-col items-center">
-              <div className="w-24 h-24 rounded-full bg-gray-200 mb-4"></div>
-              <p className="text-xl font-bold text-gray-900">{profileData.firstName} {profileData.lastName}</p>
-              <p className="text-gray-700">{profileData.beltLevel}</p>
-              <Link href="/profile/edit" legacyBehavior>
-                <a className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4">
-                  Edit Profile
-                </a>
-              </Link>
-            </div>
-          </div>
-
-          <div className="bg-white shadow rounded-lg p-6 col-span-2">
+          <Profile address={account} /> {/* Use the Profile component */}
+          
+          <div className="bg-white shadow rounded-lg p-6 col-span-3">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Wall</h2>
             <div className="bg-gray-100 p-4 rounded-lg">
               <textarea

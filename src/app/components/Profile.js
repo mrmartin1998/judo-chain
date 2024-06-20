@@ -20,9 +20,7 @@ const Profile = ({ address }) => {
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
-        console.log("Fetching profile data for address:", address);
         const data = await judokaRegistryContract.methods.getJudoka(address).call();
-        console.log("Profile data:", data);
         if (data.promotions.length > 0) {
           const latestPromotion = data.promotions[data.promotions.length - 1];
           setProfileData({
@@ -35,12 +33,10 @@ const Profile = ({ address }) => {
           });
 
           const requiredPoints = await votingContract.methods.getRequiredPointsForBelt(latestPromotion.beltLevel).call();
-          console.log("Required points:", requiredPoints.toString());
           setRequiredPoints(new BigNumber(requiredPoints).toNumber());
         }
 
         const receivedVotePoints = await votingContract.methods.getReceivedVotePoints(address).call();
-        console.log("Received vote points:", receivedVotePoints.toString());
         setReceivedVotePoints(new BigNumber(receivedVotePoints).toNumber());
 
       } catch (error) {

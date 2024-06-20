@@ -3,10 +3,11 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Navbar from '../../components/Navbar';
+import Profile from '../../components/Profile';
 import { judokaRegistryContract, votingContract } from '../../utils/contract';
 import web3 from '../../utils/web3';
 
-export default function Profile() {
+export default function ProfilePage() {
   const { address } = useParams();
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -86,15 +87,8 @@ export default function Profile() {
           </div>
         </header>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="col-span-1 bg-white shadow rounded-lg p-6">
-            <h2 className="text-xl font-bold mb-4 text-gray-900 text-center">Profile</h2>
-            <div className="flex flex-col items-center">
-              <div className="w-24 h-24 rounded-full bg-gray-200 mb-4"></div>
-              <p className="text-gray-700"><strong>Name:</strong> {`${profileData.firstName || 'N/A'} ${profileData.lastName || ''}`}</p>
-              <p className="text-gray-700"><strong>Belt Level:</strong> {profileData.promotions.length > 0 ? profileData.promotions[profileData.promotions.length - 1].beltLevel : 'N/A'}</p>
-            </div>
-          </div>
-
+          <Profile address={address} /> {/* Use the Profile component with the address */}
+          
           <div className="col-span-2 bg-white shadow rounded-lg p-6">
             <h2 className="text-xl font-bold mb-4 text-gray-900">Wall</h2>
             <div>
