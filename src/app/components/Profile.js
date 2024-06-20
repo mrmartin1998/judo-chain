@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { judokaRegistryContract, votingContract } from '../utils/contract';
-import { BigNumber } from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 
 const Profile = ({ address }) => {
   const [profileData, setProfileData] = useState({
@@ -14,14 +14,15 @@ const Profile = ({ address }) => {
     promotionDate: '',
     gym: ''
   });
-  const [votePoints, setVotePoints] = useState(0);
+  const [receivedVotePoints, setReceivedVotePoints] = useState(0);
   const [requiredPoints, setRequiredPoints] = useState(0);
 
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
-        // Fetch profile data from JudokaRegistry contract
+        console.log("Fetching profile data for address:", address);
         const data = await judokaRegistryContract.methods.getJudoka(address).call();
+        console.log("Profile data:", data);
         if (data.promotions.length > 0) {
           const latestPromotion = data.promotions[data.promotions.length - 1];
           setProfileData({
@@ -33,14 +34,14 @@ const Profile = ({ address }) => {
             gym: latestPromotion.gym
           });
 
-          // Fetch required points for the current belt level from VotingContract
           const requiredPoints = await votingContract.methods.getRequiredPointsForBelt(latestPromotion.beltLevel).call();
+          console.log("Required points:", requiredPoints.toString());
           setRequiredPoints(new BigNumber(requiredPoints).toNumber());
         }
 
-        // Fetch user's current vote points from VotingContract
-        const userVotePoints = await votingContract.methods.getUserVotePoints(address).call();
-        setVotePoints(new BigNumber(userVotePoints).toNumber());
+        const receivedVotePoints = await votingContract.methods.getReceivedVotePoints(address).call();
+        console.log("Received vote points:", receivedVotePoints.toString());
+        setReceivedVotePoints(new BigNumber(receivedVotePoints).toNumber());
 
       } catch (error) {
         console.error("Error fetching profile data:", error);
@@ -60,7 +61,7 @@ const Profile = ({ address }) => {
         <p className="text-gray-700"><strong>Belt Level:</strong> {profileData.beltLevel}</p>
         <div className="mt-4 w-full">
           <h3 className="text-xl font-bold text-gray-900 mb-4">Verification Progress</h3>
-          <p className="text-gray-700">{votePoints}/{requiredPoints} vote points</p>
+          <p className="text-gray-700">{receivedVotePoints}/{requiredPoints} vote points</p>
         </div>
         <div className="mt-4 flex flex-col space-y-2 w-full">
           <Link href="/training-history" legacyBehavior>
