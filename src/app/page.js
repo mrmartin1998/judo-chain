@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import web3 from './utils/web3';
-import contract from './utils/contract';
+import { judokaRegistryContract } from './utils/contract';
 
 const Navbar = dynamic(() => import('./components/Navbar'), { ssr: false });
 
@@ -30,7 +30,7 @@ export default function Home() {
     
     const checkUserRegistration = async (address) => {
       try {
-        const judoka = await contract.methods.getJudoka(address).call();
+        const judoka = await judokaRegistryContract.methods.getJudoka(address).call();
         setIsRegistered(judoka.isRegistered);
       } catch (error) {
         console.error("Error checking user registration:", error);
@@ -50,7 +50,7 @@ export default function Home() {
     const beltLevel = e.target.beltLevel.value;
 
     try {
-      await contract.methods.registerJudoka(firstName, lastName, email, beltLevel, "", "")
+      await judokaRegistryContract.methods.registerJudoka(firstName, lastName, email, beltLevel, "", "")
         .send({ from: account });
       setIsRegistered(true);
     } catch (error) {

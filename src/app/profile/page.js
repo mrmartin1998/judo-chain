@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import web3 from '../utils/web3';
-import contract from '../utils/contract';
+import { judokaRegistryContract } from '../utils/contract'; // Correct import
 import Navbar from '../components/Navbar';
 import Link from 'next/link';
 
@@ -29,7 +29,7 @@ export default function Profile() {
     };
 
     const fetchProfileData = async (address) => {
-      const data = await contract.methods.getJudoka(address).call();
+      const data = await judokaRegistryContract.methods.getJudoka(address).call();
       if (data.promotions.length > 0) {
         const latestPromotion = data.promotions[data.promotions.length - 1];
         setProfileData({
@@ -44,7 +44,7 @@ export default function Profile() {
     };
 
     const fetchPromotionHistory = async (address) => {
-      const history = await contract.methods.getJudokaPromotions(address).call();
+      const history = await judokaRegistryContract.methods.getJudokaPromotions(address).call();
       const filteredHistory = history.filter(promotion => promotion.beltLevel && promotion.promotionDate && promotion.gym);
       setPromotionHistory(filteredHistory.reverse()); // reverse to show the most recent first
     };

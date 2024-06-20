@@ -1,19 +1,14 @@
-"use client";
+'use client';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Navbar from '../components/Navbar';
+import Profile from '../components/Profile';
 import web3 from '../utils/web3';
-import contract from '../utils/contract';
-import judokaRegistryInstance from '../utils/contract'; // Correct import
+import { judokaRegistryContract } from '../utils/contract';
 
 export default function Main() {
   const [account, setAccount] = useState('');
-  const [profileData, setProfileData] = useState({
-    firstName: '',
-    lastName: '',
-    beltLevel: 'N/A', // Initialize with 'N/A'
-  });
   const [topics, setTopics] = useState([]);
   const [judokas, setJudokas] = useState([]);
 
@@ -23,23 +18,9 @@ export default function Main() {
         const accounts = await web3.eth.getAccounts();
         if (accounts.length > 0) {
           setAccount(accounts[0]);
-          fetchProfileData(accounts[0]);
         }
       } catch (error) {
         console.error("Error loading accounts:", error);
-      }
-    };
-
-    const fetchProfileData = async (address) => {
-      try {
-        const data = await contract.methods.getJudoka(address).call();
-        setProfileData({
-          firstName: data.firstName,
-          lastName: data.lastName,
-          beltLevel: data.promotions.length > 0 ? data.promotions[data.promotions.length - 1].beltLevel : 'N/A', // Fetch the latest belt level
-        });
-      } catch (error) {
-        console.error("Error fetching profile data:", error);
       }
     };
 
@@ -55,30 +36,19 @@ export default function Main() {
 
     const fetchAllJudokas = async () => {
       try {
-        console.log("Fetching all judokas...");
-        console.log("Contract instance:", judokaRegistryInstance);
-
-        if (judokaRegistryInstance.methods.getAllJudokas) {
-          const userAddresses = await judokaRegistryInstance.methods.getAllJudokas().call();
-          console.log("User addresses fetched:", userAddresses);
-
-          const users = await Promise.all(
-            userAddresses.map(async (address) => {
-              const user = await judokaRegistryInstance.methods.getJudoka(address).call();
-              console.log(`Fetched data for address ${address}:`, user);
-              return {
-                address,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                beltLevel: user.promotions.length > 0 ? user.promotions[user.promotions.length - 1].beltLevel : 'N/A',
-              };
-            })
-          );
-          console.log("Users fetched:", users);
-          setJudokas(users);
-        } else {
-          console.error("getAllJudokas method does not exist on the contract");
-        }
+        const userAddresses = await judokaRegistryContract.methods.getAllJudokas().call();
+        const users = await Promise.all(
+          userAddresses.map(async (address) => {
+            const user = await judokaRegistryContract.methods.getJudoka(address).call();
+            return {
+              address,
+              firstName: user.firstName,
+              lastName: user.lastName,
+              beltLevel: user.promotions.length > 0 ? user.promotions[user.promotions.length - 1].beltLevel : 'N/A',
+            };
+          })
+        );
+        setJudokas(users);
       } catch (error) {
         console.error("Error fetching judokas:", error);
       }
@@ -102,25 +72,9 @@ export default function Main() {
           </div>
         </header>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Profile Section */}
           <div className="col-span-1 bg-white shadow rounded-lg p-6">
-            <h2 className="text-xl font-bold mb-4 text-gray-900 text-center">Profile</h2>
-            <div className="flex flex-col items-center">
-              <div className="w-24 h-24 rounded-full bg-gray-200 mb-4"></div>
-              <p className="text-gray-700"><strong>Name:</strong> {`${profileData.firstName || 'N/A'} ${profileData.lastName || ''}`}</p>
-              <p className="text-gray-700"><strong>Belt Level:</strong> {profileData.beltLevel || 'N/A'}</p>
-              <div className="mt-4 flex flex-col space-y-2">
-                <Link href="/training-history" legacyBehavior>
-                  <a className="bg-blue-500 text-white py-2 px-4 rounded">View training history</a>
-                </Link>
-                <Link href="/profile" legacyBehavior>
-                  <a className="bg-green-500 text-white py-2 px-4 rounded">View full profile</a>
-                </Link>
-              </div>
-            </div>
+            <Profile address={account} /> {/* Use Profile component */}
           </div>
-
-          {/* Welcome Section */}
           <div className="col-span-2 bg-white shadow rounded-lg p-6">
             <h2 className="text-xl font-bold mb-4">Welcome to Judo-Chain</h2>
             <p className="text-gray-700 mb-4">Your trusted platform for Judo belt verification.</p>

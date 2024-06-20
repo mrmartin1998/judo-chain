@@ -3,12 +3,17 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Navbar from '../../components/Navbar';
-import contract from '../../utils/contract';
+import { judokaRegistryContract, votingContract } from '../../utils/contract';
+import web3 from '../../utils/web3';
 
 export default function Profile() {
   const { address } = useParams();
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [beltLevel, setBeltLevel] = useState('');
+  const [promotionDate, setPromotionDate] = useState('');
+  const [gym, setGym] = useState('');
+  const [requesting, setRequesting] = useState(false);
 
   useEffect(() => {
     if (!address) {
@@ -18,8 +23,7 @@ export default function Profile() {
 
     const fetchProfileData = async () => {
       try {
-        const data = await contract.methods.getJudoka(address).call();
-        console.log("Fetched profile data:", data);
+        const data = await judokaRegistryContract.methods.getJudoka(address).call();
         setProfileData(data);
       } catch (error) {
         console.error("Error fetching profile data:", error);
@@ -30,6 +34,21 @@ export default function Profile() {
 
     fetchProfileData();
   }, [address]);
+
+  const handleRequestPromotion = async (e) => {
+    e.preventDefault();
+    setRequesting(true);
+    try {
+      const accounts = await web3.eth.getAccounts();
+      await votingContract.methods.requestPromotion(beltLevel, promotionDate, gym).send({ from: accounts[0] });
+      alert('Promotion requested successfully');
+    } catch (error) {
+      console.error('Error requesting promotion:', error);
+      alert('Failed to request promotion');
+    } finally {
+      setRequesting(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -57,11 +76,6 @@ export default function Profile() {
     );
   }
 
-  // Filter out promotions with empty fields and reverse the order to show the latest first
-  const promotionHistory = profileData.promotions
-    .filter(promotion => promotion.beltLevel && promotion.promotionDate && promotion.gym)
-    .reverse();
-
   return (
     <div className="min-h-screen bg-gray-100">
       <Navbar />
@@ -72,7 +86,6 @@ export default function Profile() {
           </div>
         </header>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Basic Information Section */}
           <div className="col-span-1 bg-white shadow rounded-lg p-6">
             <h2 className="text-xl font-bold mb-4 text-gray-900 text-center">Profile</h2>
             <div className="flex flex-col items-center">
@@ -82,21 +95,18 @@ export default function Profile() {
             </div>
           </div>
 
-          {/* Wall Section */}
           <div className="col-span-2 bg-white shadow rounded-lg p-6">
             <h2 className="text-xl font-bold mb-4 text-gray-900">Wall</h2>
             <div>
-              {/* Implement wall messages display and form for adding new messages */}
               <textarea className="w-full p-2 mb-4 border rounded" placeholder="Leave a message..." />
               <button className="bg-blue-500 text-white py-2 px-4 rounded">Post</button>
             </div>
           </div>
 
-          {/* Promotion History Section */}
           <div className="col-span-1 md:col-span-3 bg-white shadow rounded-lg p-6 mt-4">
             <h2 className="text-xl font-bold mb-4 text-gray-900">Promotion History</h2>
             <ul className="list-none text-gray-700">
-              {promotionHistory.length > 0 ? promotionHistory.map((promotion, index) => (
+              {profileData.promotions.length > 0 ? profileData.promotions.map((promotion, index) => (
                 <li key={index} className="mb-2">
                   <p><strong>Belt Level:</strong> {promotion.beltLevel}</p>
                   <p><strong>Promotion Date:</strong> {promotion.promotionDate}</p>
@@ -106,6 +116,58 @@ export default function Profile() {
                 <p className="text-gray-700">No promotion history available.</p>
               )}
             </ul>
+          </div>
+
+          <div className="col-span-1 md:col-span-3 bg-white shadow rounded-lg p-6 mt-4">
+            <h2 className="text-xl font-bold mb-4 text-gray-900">Request Promotion</h2>
+            <form onSubmit={handleRequestPromotion}>
+              <div className="mb-4">
+                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="beltLevel">
+                  Belt Level
+                </label>
+                <input
+                  id="beltLevel"
+                  type="text"
+                  value={beltLevel}
+                  onChange={(e) => setBeltLevel(e.target.value)}
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="promotionDate">
+                  Promotion Date
+                </label>
+                <input
+                  id="promotionDate"
+                  type="date"
+                  value={promotionDate}
+                  onChange={(e) => setPromotionDate(e.target.value)}
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="gym">
+                  Gym
+                </label>
+                <input
+                  id="gym"
+                  type="text"
+                  value={gym}
+                  onChange={(e) => setGym(e.target.value)}
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  required
+                />
+              </div>
+              <button
+                type="submit"
+                className="bg-green-500 text-white py-2 px-4 rounded"
+                disabled={requesting}
+              >
+                {requesting ? 'Requesting...' : 'Request Promotion'}
+              </button>
+            </form>
           </div>
         </div>
       </main>

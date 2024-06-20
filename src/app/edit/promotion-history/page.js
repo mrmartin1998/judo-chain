@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import web3 from '../../utils/web3';
-import contract from '../../utils/contract';
+import { judokaRegistryContract } from '../../utils/contract'; // Correct import
 import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/Sidebar';
 
@@ -21,9 +21,9 @@ const PromotionHistory = () => {
     const loadJudoka = async () => {
       const accounts = await web3.eth.getAccounts();
       if (accounts.length > 0) {
-        const data = await contract.methods.getJudoka(accounts[0]).call();
+        const data = await judokaRegistryContract.methods.getJudoka(accounts[0]).call();
         setJudoka(data);
-        const history = await contract.methods.getJudokaPromotions(accounts[0]).call(); // Fetch promotion history
+        const history = await judokaRegistryContract.methods.getJudokaPromotions(accounts[0]).call(); // Fetch promotion history
         setPromotionHistory(history);
       }
     };
@@ -33,7 +33,7 @@ const PromotionHistory = () => {
   const handleUpdateJudoka = async () => {
     const accounts = await web3.eth.getAccounts();
     if (accounts.length > 0) {
-      await contract.methods.updateJudoka(
+      await judokaRegistryContract.methods.updateJudoka(
         judoka.firstName,
         judoka.lastName,
         judoka.email,
@@ -42,7 +42,7 @@ const PromotionHistory = () => {
         newPromotion.gym
       ).send({ from: accounts[0] });
 
-      const updatedHistory = await contract.methods.getJudokaPromotions(accounts[0]).call();
+      const updatedHistory = await judokaRegistryContract.methods.getJudokaPromotions(accounts[0]).call();
       setPromotionHistory(updatedHistory);
 
       setNewPromotion({ beltLevel: '', promotionDate: null, gym: '' });
