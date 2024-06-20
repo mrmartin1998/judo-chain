@@ -11,10 +11,9 @@ export default function ProfilePage() {
   const { address } = useParams();
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [beltLevel, setBeltLevel] = useState('');
-  const [promotionDate, setPromotionDate] = useState('');
-  const [gym, setGym] = useState('');
-  const [requesting, setRequesting] = useState(false);
+  const [votes, setVotes] = useState([]);
+  const [votePoints, setVotePoints] = useState(0);
+  const [castingVote, setCastingVote] = useState(false);
 
   useEffect(() => {
     if (!address) {
@@ -24,10 +23,38 @@ export default function ProfilePage() {
 
     const fetchProfileData = async () => {
       try {
+        console.log("Fetching profile data for address:", address);
+
         const data = await judokaRegistryContract.methods.getJudoka(address).call();
+        console.log("Judoka data:", data);
         setProfileData(data);
+
+        console.log("Available methods:", votingContract.methods);
+
+        // Check and log all methods in the votingContract
+        const contractMethods = Object.keys(votingContract.methods);
+        console.log("Contract Methods:", contractMethods);
+
+        // Check if the method exists and fetch data accordingly
+        if (contractMethods.includes('getReceivedVotePoints')) {
+          const points = await votingContract.methods.getReceivedVotePoints(address).call();
+          console.log("Received vote points:", points);
+          setVotePoints(points);
+        } else {
+          console.error("getReceivedVotePoints method not found in contract.");
+        }
+
+        if (contractMethods.includes('getVotesForUser')) {
+          const voteList = await votingContract.methods.getVotesForUser(address).call();
+          console.log("Vote list:", voteList);
+          setVotes(voteList);
+        } else {
+          console.error("getVotesForUser method not found in contract.");
+        }
+
       } catch (error) {
-        console.error("Error fetching profile data:", error);
+        console.error("Error fetching profile data:", error.message);
+        console.error("Error stack trace:", error.stack);
       } finally {
         setLoading(false);
       }
@@ -36,18 +63,37 @@ export default function ProfilePage() {
     fetchProfileData();
   }, [address]);
 
-  const handleRequestPromotion = async (e) => {
-    e.preventDefault();
-    setRequesting(true);
+  const handleVote = async (isVerified) => {
+    setCastingVote(true);
     try {
       const accounts = await web3.eth.getAccounts();
-      await votingContract.methods.requestPromotion(beltLevel, promotionDate, gym).send({ from: accounts[0] });
-      alert('Promotion requested successfully');
+      console.log("Voting from account:", accounts[0]);
+
+      await votingContract.methods.voteForUser(address, isVerified).send({ from: accounts[0] });
+      alert('Vote cast successfully');
+
+      const contractMethods = Object.keys(votingContract.methods);
+      if (contractMethods.includes('getReceivedVotePoints')) {
+        const points = await votingContract.methods.getReceivedVotePoints(address).call();
+        console.log("Updated received vote points:", points);
+        setVotePoints(points);
+      } else {
+        console.error("getReceivedVotePoints method not found in contract.");
+      }
+
+      if (contractMethods.includes('getVotesForUser')) {
+        const voteList = await votingContract.methods.getVotesForUser(address).call();
+        console.log("Updated vote list:", voteList);
+        setVotes(voteList);
+      } else {
+        console.error("getVotesForUser method not found in contract.");
+      }
     } catch (error) {
-      console.error('Error requesting promotion:', error);
-      alert('Failed to request promotion');
+      console.error('Error casting vote:', error.message);
+      console.error('Error stack trace:', error.stack);
+      alert('Failed to cast vote');
     } finally {
-      setRequesting(false);
+      setCastingVote(false);
     }
   };
 
@@ -87,8 +133,8 @@ export default function ProfilePage() {
           </div>
         </header>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Profile address={address} /> {/* Use the Profile component with the address */}
-          
+          <Profile address={address} />
+
           <div className="col-span-2 bg-white shadow rounded-lg p-6">
             <h2 className="text-xl font-bold mb-4 text-gray-900">Wall</h2>
             <div>
@@ -113,55 +159,37 @@ export default function ProfilePage() {
           </div>
 
           <div className="col-span-1 md:col-span-3 bg-white shadow rounded-lg p-6 mt-4">
-            <h2 className="text-xl font-bold mb-4 text-gray-900">Request Promotion</h2>
-            <form onSubmit={handleRequestPromotion}>
-              <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="beltLevel">
-                  Belt Level
-                </label>
-                <input
-                  id="beltLevel"
-                  type="text"
-                  value={beltLevel}
-                  onChange={(e) => setBeltLevel(e.target.value)}
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  required
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="promotionDate">
-                  Promotion Date
-                </label>
-                <input
-                  id="promotionDate"
-                  type="date"
-                  value={promotionDate}
-                  onChange={(e) => setPromotionDate(e.target.value)}
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  required
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="gym">
-                  Gym
-                </label>
-                <input
-                  id="gym"
-                  type="text"
-                  value={gym}
-                  onChange={(e) => setGym(e.target.value)}
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  required
-                />
-              </div>
+            <h2 className="text-xl font-bold mb-4 text-gray-900">Votes Received for Current Rank</h2>
+            <ul className="list-none text-gray-700">
+              {votes.length > 0 ? votes.map((vote, index) => (
+                <li key={index} className="mb-2">
+                  <p><strong>Voter:</strong> {vote.voter}</p>
+                  <p><strong>Verification Status:</strong> {vote.isVerified ? 'Yes' : 'No'}</p>
+                </li>
+              )) : (
+                <p className="text-gray-700">No votes received for current rank.</p>
+              )}
+            </ul>
+          </div>
+
+          <div className="col-span-1 md:col-span-3 bg-white shadow rounded-lg p-6 mt-4">
+            <h2 className="text-xl font-bold mb-4 text-gray-900">Verify Rank</h2>
+            <div>
               <button
-                type="submit"
-                className="bg-green-500 text-white py-2 px-4 rounded"
-                disabled={requesting}
+                className="bg-green-500 text-white py-2 px-4 rounded mr-2"
+                onClick={() => handleVote(true)}
+                disabled={castingVote}
               >
-                {requesting ? 'Requesting...' : 'Request Promotion'}
+                {castingVote ? 'Voting...' : 'Yes (+ points)'}
               </button>
-            </form>
+              <button
+                className="bg-red-500 text-white py-2 px-4 rounded"
+                onClick={() => handleVote(false)}
+                disabled={castingVote}
+              >
+                {castingVote ? 'Voting...' : 'No (- points)'}
+              </button>
+            </div>
           </div>
         </div>
       </main>

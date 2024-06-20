@@ -15,6 +15,7 @@ contract JudokaRegistry {
         bool isRegistered;
         Promotion[] promotions;
         uint256 votingPower;
+        uint256 points;  // Add this field
     }
 
     mapping(address => Judoka) public judokas;
@@ -44,6 +45,7 @@ contract JudokaRegistry {
         newJudoka.email = _email;
         newJudoka.isRegistered = true;
         newJudoka.votingPower = votingPower;
+        newJudoka.points = 0;  // Initialize points to 0
         newJudoka.promotions.push(initialPromotion);
 
         judokaAddresses.push(msg.sender);
@@ -81,6 +83,11 @@ contract JudokaRegistry {
         return judokaAddresses;
     }
 
+    function updateJudokaPoints(address _judokaAddress, uint256 newPoints) public {
+        require(judokas[_judokaAddress].isRegistered, "Judoka is not registered.");
+        judokas[_judokaAddress].points = newPoints;
+    }
+
     function updateJudoka(
         string memory _firstName,
         string memory _lastName,
@@ -90,7 +97,7 @@ contract JudokaRegistry {
         string memory _gym
     ) public {
         require(judokas[msg.sender].isRegistered, "Judoka is not registered.");
-        
+
         judokas[msg.sender].firstName = _firstName;
         judokas[msg.sender].lastName = _lastName;
         judokas[msg.sender].email = _email;
