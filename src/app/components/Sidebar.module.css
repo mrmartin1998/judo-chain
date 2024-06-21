@@ -1,0 +1,16 @@
+.sidebar {
+    @apply h-full w-64 bg-white shadow-md overflow-y-auto;
+  }
+  
+  .sidebarHeader {
+    @apply px-4 py-6;
+  }
+  
+  .sidebarNav {
+    @apply flex-1 px-4 pb-4;
+  }
+  
+  .sidebarNavItem {
+    @apply text-gray-900 hover:bg-gray-200 px-3 py-2 rounded-md block font-medium;
+  }
+  
