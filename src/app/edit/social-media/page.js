@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import web3 from '../../utils/web3';
-import { judokaRegistryContract } from '../../utils/contract';
+import { profileManagementContract } from '../../utils/contract';
 import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/Sidebar';
 
@@ -25,12 +25,12 @@ const SocialMedia = () => {
 
     const fetchSocialMediaInfo = async (address) => {
       try {
-        const data = await judokaRegistryContract.methods.getJudoka(address).call();
-        if (data) {
+        const profileInfo = await profileManagementContract.methods.profiles(address).call();
+        if (profileInfo) {
           setSocialMedia({
-            instagram: data.instagram || '',
-            facebook: data.facebook || '',
-            youtube: data.youtube || ''
+            instagram: profileInfo.socialMedia.instagram || '',
+            facebook: profileInfo.socialMedia.facebook || '',
+            youtube: profileInfo.socialMedia.youtube || ''
           });
         }
       } catch (error) {
@@ -50,7 +50,7 @@ const SocialMedia = () => {
 
   const handleSave = async () => {
     try {
-      await judokaRegistryContract.methods.updateSocialMedia(
+      await profileManagementContract.methods.updateSocialMedia(
         socialMedia.instagram,
         socialMedia.facebook,
         socialMedia.youtube

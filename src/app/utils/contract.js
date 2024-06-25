@@ -6,24 +6,26 @@ import ContentManagement from '../../../build/contracts/ContentManagement.json';
 import CompetitionRecords from '../../../build/contracts/CompetitionRecords.json';
 import Verification from '../../../build/contracts/Verification.json';
 import EventParticipation from '../../../build/contracts/EventParticipation.json';
+import CoachRegistry from '../../../build/contracts/CoachRegistry.json';
 
-// Deployed contract addresses
-const judokaRegistryAddress = '0x21F9bcA925D5A9D36179764E68dE6744a96a61e0';
-const votingContractAddress = '0xDF371052667f03655Ab7CD2B1b4BFFd64eEB8Ac0';
-const profileManagementAddress = '0xb3b0Ff677eeA2D2030dA258D9FE7f3B7B503b4d4';
-const contentManagementAddress = '0xD9Cb7cdd26C38b6ee9724878991f3205c5705272';
-const competitionRecordsAddress = '0x0e4D4277C4979B1E0CDBF4e7fc5E95A361247ca5';
-const verificationAddress = '0x3c7F187B27d24cFf8268832345DA46D3c8903cAB';
-const eventParticipationAddress = '0x31879318DBb8918Aa43d8ac51c2b028844D68896';
+const judokaRegistryAddress = '0x766b8fD16d38Aa0e1aFB353281F6a29c9C7d3014';
+const votingContractAddress = '0x7aAd4737A6109cd27985B041d4f945d0eF943f03';
+const profileManagementAddress = '0x0Cf06C423Be3e3AD741dF7A5354d6570e26A9C3E';
+const contentManagementAddress = '0x89ADafCcfDafD4E65bC9cA9248E5087F971FdA45';
+const competitionRecordsAddress = '0xe65d38fF3186F37e566123fDEe6E5d72B9b70dB5';
+const verificationAddress = '0x997605ef8200e74Ed4ddc45dB34dEfe9B48c82a2';
+const eventParticipationAddress = '0xA764b4b88f8b8eC0336E5fb3F26f21f1Aa7b2baF';
+const coachRegistryAddress = '0xC9Ae9eaed240acacCFEDC981551B37d0D7957e37';
 
 /*
-JudokaRegistry: 0x21F9bcA925D5A9D36179764E68dE6744a96a61e0
-VotingContract: 0xDF371052667f03655Ab7CD2B1b4BFFd64eEB8Ac0
-ProfileManagement: 0xb3b0Ff677eeA2D2030dA258D9FE7f3B7B503b4d4
-ContentManagement: 0xD9Cb7cdd26C38b6ee9724878991f3205c5705272
-CompetitionRecords: 0x0e4D4277C4979B1E0CDBF4e7fc5E95A361247ca5
-Verification: 0x3c7F187B27d24cFf8268832345DA46D3c8903cAB
-EventParticipation: 0x31879318DBb8918Aa43d8ac51c2b028844D68896
+JudokaRegistry: 0x766b8fD16d38Aa0e1aFB353281F6a29c9C7d3014
+VotingContract: 0x7aAd4737A6109cd27985B041d4f945d0eF943f03
+ProfileManagement: 0x0Cf06C423Be3e3AD741dF7A5354d6570e26A9C3E
+ContentManagement: 0x89ADafCcfDafD4E65bC9cA9248E5087F971FdA45
+CompetitionRecords: 0xe65d38fF3186F37e566123fDEe6E5d72B9b70dB5
+Verification: 0x997605ef8200e74Ed4ddc45dB34dEfe9B48c82a2
+EventParticipation: 0xA764b4b88f8b8eC0336E5fb3F26f21f1Aa7b2baF
+CoachRegistry: 0xC9Ae9eaed240acacCFEDC981551B37d0D7957e37
 */
 
 const judokaRegistryContract = new web3.eth.Contract(JudokaRegistry.abi, judokaRegistryAddress);
@@ -33,6 +35,7 @@ const contentManagementContract = new web3.eth.Contract(ContentManagement.abi, c
 const competitionRecordsContract = new web3.eth.Contract(CompetitionRecords.abi, competitionRecordsAddress);
 const verificationContract = new web3.eth.Contract(Verification.abi, verificationAddress);
 const eventParticipationContract = new web3.eth.Contract(EventParticipation.abi, eventParticipationAddress);
+const coachRegistryContract = new web3.eth.Contract(CoachRegistry.abi, coachRegistryAddress); 
 
 export {
     judokaRegistryContract,
@@ -41,5 +44,6 @@ export {
     contentManagementContract,
     competitionRecordsContract,
     verificationContract,
-    eventParticipationContract
+    eventParticipationContract,
+    coachRegistryContract
 };
