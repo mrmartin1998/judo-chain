@@ -140,7 +140,7 @@ const PersonalInformation = () => {
               />
               <button
                 onClick={() => handleSave('middleName')}
-                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 mt-2 rounded focus:outline-none focus:shadow-outline"
               >
                 Save Middle Name
               </button>
@@ -169,7 +169,7 @@ const PersonalInformation = () => {
               />
               <button
                 onClick={() => handleSave('birthday')}
-                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 mt-2 rounded focus:outline-none focus:shadow-outline"
               >
                 Save Birthday
               </button>
@@ -185,7 +185,7 @@ const PersonalInformation = () => {
               />
               <button
                 onClick={() => handleSave('makePublic')}
-                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 mt-2 rounded focus:outline-none focus:shadow-outline"
               >
                 Save Make Public
               </button>
@@ -205,7 +205,7 @@ const PersonalInformation = () => {
               </select>
               <button
                 onClick={() => handleSave('sex')}
-                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 mt-2 rounded focus:outline-none focus:shadow-outline"
               >
                 Save Sex
               </button>
@@ -222,7 +222,7 @@ const PersonalInformation = () => {
               />
               <button
                 onClick={() => handleSave('state')}
-                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 mt-2 rounded focus:outline-none focus:shadow-outline"
               >
                 Save State
               </button>
@@ -239,7 +239,7 @@ const PersonalInformation = () => {
               />
               <button
                 onClick={() => handleSave('city')}
-                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 mt-2 rounded focus:outline-none focus:shadow-outline"
               >
                 Save City
               </button>
@@ -256,7 +256,7 @@ const PersonalInformation = () => {
               />
               <button
                 onClick={() => handleSave('country')}
-                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 mt-2 rounded focus:outline-none focus:shadow-outline"
               >
                 Save Country
               </button>
@@ -272,7 +272,7 @@ const PersonalInformation = () => {
               />
               <button
                 onClick={() => handleSave('description')}
-                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 mt-2 rounded focus:outline-none focus:shadow-outline"
               >
                 Save Description
               </button>
