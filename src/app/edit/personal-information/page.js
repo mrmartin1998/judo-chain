@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import web3 from '../../utils/web3';
-import { judokaRegistryContract } from '../../utils/contract';
+import { profileManagementContract, judokaRegistryContract } from '../../utils/contract';
 import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/Sidebar';
 
@@ -12,7 +12,6 @@ const PersonalInformation = () => {
     firstName: '',
     middleName: '',
     lastName: '',
-    alternativeName: '',
     email: '',
     birthday: '',
     makePublic: false,
@@ -28,29 +27,28 @@ const PersonalInformation = () => {
       const accounts = await web3.eth.getAccounts();
       if (accounts.length > 0) {
         setAccount(accounts[0]);
-        fetchPersonalInfo(accounts[0]);
+        await fetchPersonalInfo(accounts[0]);
       }
     };
 
     const fetchPersonalInfo = async (address) => {
       try {
-        const data = await judokaRegistryContract.methods.getJudoka(address).call();
-        if (data) {
-          setPersonalInfo({
-            firstName: data.firstName,
-            middleName: data.middleName || '',
-            lastName: data.lastName,
-            alternativeName: data.alternativeName || '',
-            email: data.email,
-            birthday: data.birthday || '',
-            makePublic: data.makePublic || false,
-            sex: data.sex || '',
-            state: data.state || '',
-            city: data.city || '',
-            country: data.country || '',
-            description: data.description || ''
-          });
-        }
+        const basicInfo = await judokaRegistryContract.methods.getJudoka(address).call();
+        const profileInfo = await profileManagementContract.methods.profiles(address).call();
+
+        setPersonalInfo({
+          firstName: basicInfo.firstName,
+          middleName: profileInfo.personalInfo.middleName || '',
+          lastName: basicInfo.lastName,
+          email: basicInfo.email,
+          birthday: profileInfo.personalInfo.birthday || '',
+          makePublic: profileInfo.personalInfo.makePublic || false,
+          sex: profileInfo.personalInfo.sex || '',
+          state: profileInfo.personalInfo.state || '',
+          city: profileInfo.personalInfo.city || '',
+          country: profileInfo.personalInfo.country || '',
+          description: profileInfo.personalInfo.description || ''
+        });
       } catch (error) {
         console.error("Error fetching personal information:", error);
       }
@@ -71,16 +69,38 @@ const PersonalInformation = () => {
     setPersonalInfo({ ...personalInfo, [name]: checked });
   };
 
-  const handleSave = async () => {
+  const handleSave = async (field) => {
     try {
-      await judokaRegistryContract.methods.updateJudoka(
-        personalInfo.firstName,
-        personalInfo.lastName,
-        personalInfo.email,
-        personalInfo.beltLevel,
-        personalInfo.promotionDate,
-        personalInfo.gym
-      ).send({ from: account });
+      let method;
+      switch (field) {
+        case 'middleName':
+          method = profileManagementContract.methods.updateMiddleName(personalInfo.middleName);
+          break;
+        case 'birthday':
+          method = profileManagementContract.methods.updateBirthday(personalInfo.birthday);
+          break;
+        case 'makePublic':
+          method = profileManagementContract.methods.updateMakePublic(personalInfo.makePublic);
+          break;
+        case 'sex':
+          method = profileManagementContract.methods.updateSex(personalInfo.sex);
+          break;
+        case 'state':
+          method = profileManagementContract.methods.updateState(personalInfo.state);
+          break;
+        case 'city':
+          method = profileManagementContract.methods.updateCity(personalInfo.city);
+          break;
+        case 'country':
+          method = profileManagementContract.methods.updateCountry(personalInfo.country);
+          break;
+        case 'description':
+          method = profileManagementContract.methods.updateDescription(personalInfo.description);
+          break;
+        default:
+          return;
+      }
+      await method.send({ from: account });
 
       alert('Personal information updated successfully');
     } catch (error) {
@@ -105,6 +125,7 @@ const PersonalInformation = () => {
                 onChange={handleInputChange}
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                 style={{ color: 'black', backgroundColor: 'white' }}
+                readOnly
               />
             </div>
             <div className="mb-4">
@@ -117,6 +138,12 @@ const PersonalInformation = () => {
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                 style={{ color: 'black', backgroundColor: 'white' }}
               />
+              <button
+                onClick={() => handleSave('middleName')}
+                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              >
+                Save Middle Name
+              </button>
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700">Last Name</label>
@@ -127,28 +154,7 @@ const PersonalInformation = () => {
                 onChange={handleInputChange}
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                 style={{ color: 'black', backgroundColor: 'white' }}
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Alternative Name</label>
-              <input
-                type="text"
-                name="alternativeName"
-                value={personalInfo.alternativeName}
-                onChange={handleInputChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                style={{ color: 'black', backgroundColor: 'white' }}
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Email Address</label>
-              <input
-                type="email"
-                name="email"
-                value={personalInfo.email}
-                onChange={handleInputChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                style={{ color: 'black', backgroundColor: 'white' }}
+                readOnly
               />
             </div>
             <div className="mb-4">
@@ -161,6 +167,12 @@ const PersonalInformation = () => {
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                 style={{ color: 'black', backgroundColor: 'white' }}
               />
+              <button
+                onClick={() => handleSave('birthday')}
+                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              >
+                Save Birthday
+              </button>
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700">Make Public</label>
@@ -171,6 +183,12 @@ const PersonalInformation = () => {
                 onChange={handleCheckboxChange}
                 className="mt-1 block"
               />
+              <button
+                onClick={() => handleSave('makePublic')}
+                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              >
+                Save Make Public
+              </button>
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700">Sex</label>
@@ -185,6 +203,12 @@ const PersonalInformation = () => {
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
               </select>
+              <button
+                onClick={() => handleSave('sex')}
+                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              >
+                Save Sex
+              </button>
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700">State</label>
@@ -196,6 +220,12 @@ const PersonalInformation = () => {
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                 style={{ color: 'black', backgroundColor: 'white' }}
               />
+              <button
+                onClick={() => handleSave('state')}
+                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              >
+                Save State
+              </button>
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700">City</label>
@@ -207,6 +237,12 @@ const PersonalInformation = () => {
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                 style={{ color: 'black', backgroundColor: 'white' }}
               />
+              <button
+                onClick={() => handleSave('city')}
+                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              >
+                Save City
+              </button>
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700">Country</label>
@@ -218,6 +254,12 @@ const PersonalInformation = () => {
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                 style={{ color: 'black', backgroundColor: 'white' }}
               />
+              <button
+                onClick={() => handleSave('country')}
+                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              >
+                Save Country
+              </button>
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700">Description</label>
@@ -228,13 +270,13 @@ const PersonalInformation = () => {
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                 style={{ color: 'black', backgroundColor: 'white' }}
               />
+              <button
+                onClick={() => handleSave('description')}
+                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              >
+                Save Description
+              </button>
             </div>
-            <button
-              onClick={handleSave}
-              className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            >
-              Save
-            </button>
           </div>
         </main>
       </div>
