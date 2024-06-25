@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import web3 from '../../utils/web3';
-import { judokaRegistryContract } from '../../utils/contract';
+import { profileManagementContract } from '../../utils/contract';
 import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/Sidebar';
 
@@ -21,9 +21,9 @@ const Academy = () => {
 
     const fetchAcademyInfo = async (address) => {
       try {
-        const data = await judokaRegistryContract.methods.getJudoka(address).call();
-        if (data && data.academy) {
-          setAcademy(data.academy);
+        const profileInfo = await profileManagementContract.methods.profiles(address).call();
+        if (profileInfo && profileInfo.academy) {
+          setAcademy(profileInfo.academy);
         }
       } catch (error) {
         console.error("Error fetching academy information:", error);
@@ -41,7 +41,7 @@ const Academy = () => {
 
   const handleSave = async () => {
     try {
-      await judokaRegistryContract.methods.updateAcademy(academy).send({ from: account });
+      await profileManagementContract.methods.updateAcademyAffiliation(academy).send({ from: account });
       alert('Academy information updated successfully');
     } catch (error) {
       console.error("Error updating academy information:", error);

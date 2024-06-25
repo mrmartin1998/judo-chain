@@ -35,7 +35,7 @@ const Profile = ({ address }) => {
             email: basicInfo.email,
             beltLevel: latestPromotion.beltLevel,
             promotionDate: latestPromotion.promotionDate,
-            gym: latestPromotion.gym,
+            gym: profileInfo.academy, // Update here to use academy from ProfileManagement
             state: profileInfo.personalInfo.state,
             city: profileInfo.personalInfo.city,
             country: profileInfo.personalInfo.country,
