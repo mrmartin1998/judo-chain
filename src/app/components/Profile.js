@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { judokaRegistryContract, votingContract } from '../utils/contract';
+import { judokaRegistryContract, profileManagementContract, votingContract } from '../utils/contract';
 import BigNumber from 'bignumber.js';
 
 const Profile = ({ address }) => {
@@ -12,7 +12,11 @@ const Profile = ({ address }) => {
     email: '',
     beltLevel: '',
     promotionDate: '',
-    gym: ''
+    gym: '',
+    state: '',
+    city: '',
+    country: '',
+    description: ''
   });
   const [receivedVotePoints, setReceivedVotePoints] = useState(0);
   const [requiredPoints, setRequiredPoints] = useState(0);
@@ -20,16 +24,22 @@ const Profile = ({ address }) => {
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
-        const data = await judokaRegistryContract.methods.getJudoka(address).call();
-        if (data.promotions.length > 0) {
-          const latestPromotion = data.promotions[data.promotions.length - 1];
+        const basicInfo = await judokaRegistryContract.methods.getJudoka(address).call();
+        const profileInfo = await profileManagementContract.methods.profiles(address).call();
+
+        if (basicInfo.promotions.length > 0) {
+          const latestPromotion = basicInfo.promotions[basicInfo.promotions.length - 1];
           setProfileData({
-            firstName: data.firstName,
-            lastName: data.lastName,
-            email: data.email,
+            firstName: basicInfo.firstName,
+            lastName: basicInfo.lastName,
+            email: basicInfo.email,
             beltLevel: latestPromotion.beltLevel,
             promotionDate: latestPromotion.promotionDate,
-            gym: latestPromotion.gym
+            gym: latestPromotion.gym,
+            state: profileInfo.personalInfo.state,
+            city: profileInfo.personalInfo.city,
+            country: profileInfo.personalInfo.country,
+            description: profileInfo.personalInfo.description
           });
 
           const requiredPoints = await votingContract.methods.getRequiredPointsForBelt(latestPromotion.beltLevel).call();
@@ -54,7 +64,14 @@ const Profile = ({ address }) => {
       <div className="flex flex-col items-center">
         <div className="w-24 h-24 rounded-full bg-gray-200 mb-4"></div>
         <p className="text-xl font-bold text-gray-900">{profileData.firstName} {profileData.lastName}</p>
+        <p className="text-gray-700"><strong>Email:</strong> {profileData.email}</p>
         <p className="text-gray-700"><strong>Belt Level:</strong> {profileData.beltLevel}</p>
+        <p className="text-gray-700"><strong>Promotion Date:</strong> {profileData.promotionDate}</p>
+        <p className="text-gray-700"><strong>Gym:</strong> {profileData.gym}</p>
+        <p className="text-gray-700"><strong>State:</strong> {profileData.state}</p>
+        <p className="text-gray-700"><strong>City:</strong> {profileData.city}</p>
+        <p className="text-gray-700"><strong>Country:</strong> {profileData.country}</p>
+        <p className="text-gray-700"><strong>Description:</strong> {profileData.description}</p>
         <div className="mt-4 w-full">
           <h3 className="text-xl font-bold text-gray-900 mb-4">Verification Progress</h3>
           <p className="text-gray-700">{receivedVotePoints}/{requiredPoints} vote points</p>
