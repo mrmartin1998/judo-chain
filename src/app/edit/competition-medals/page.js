@@ -4,14 +4,14 @@ import { useEffect, useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import web3 from '../../utils/web3';
-import { judokaRegistryContract } from '../../utils/contract'; // Correct import
+import { competitionRecordsContract } from '../../utils/contract';
 import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/Sidebar';
 
 const CompetitionMedals = () => {
   const [account, setAccount] = useState('');
   const [medal, setMedal] = useState({
-    event: '',
+    eventName: '',
     location: '',
     division: '',
     result: 'Bronze',
@@ -31,9 +31,13 @@ const CompetitionMedals = () => {
 
     const fetchMedals = async (address) => {
       try {
-        const data = await judokaRegistryContract.methods.getMedals(address).call();
+        const data = await competitionRecordsContract.methods.getMedals(address).call();
         if (data) {
-          setMedals(data);
+          const formattedMedals = data.map(medal => ({
+            ...medal,
+            date: new Date(medal.date)
+          }));
+          setMedals(formattedMedals);
         }
       } catch (error) {
         console.error("Error fetching medals:", error);
@@ -60,17 +64,16 @@ const CompetitionMedals = () => {
 
   const handleSaveMedal = async () => {
     try {
-      // Placeholder for saving medal logic, e.g., uploading the image and saving data to the blockchain
       const formData = new FormData();
       formData.append('image', medal.image);
-      formData.append('event', medal.event);
+      formData.append('eventName', medal.eventName);
       formData.append('location', medal.location);
       formData.append('division', medal.division);
       formData.append('result', medal.result);
       formData.append('date', medal.date);
 
-      await judokaRegistryContract.methods.addMedal(
-        medal.event,
+      await competitionRecordsContract.methods.addMedal(
+        medal.eventName,
         medal.location,
         medal.division,
         medal.result,
@@ -78,9 +81,9 @@ const CompetitionMedals = () => {
         'image_url_placeholder' // Placeholder for uploaded image URL
       ).send({ from: account });
 
-      setMedals([...medals, medal]);
+      setMedals([...medals, { ...medal, date: medal.date.toISOString().split('T')[0] }]);
       setMedal({
-        event: '',
+        eventName: '',
         location: '',
         division: '',
         result: 'Bronze',
@@ -107,8 +110,8 @@ const CompetitionMedals = () => {
               <label className="block text-sm font-medium text-gray-700">Event</label>
               <input
                 type="text"
-                name="event"
-                value={medal.event}
+                name="eventName"
+                value={medal.eventName}
                 onChange={handleInputChange}
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                 style={{ color: 'black', backgroundColor: 'white' }}
@@ -192,12 +195,12 @@ const CompetitionMedals = () => {
               <tbody>
                 {medals.map((medal, index) => (
                   <tr key={index}>
-                    <td className="border px-4 py-2">{medal.date}</td>
-                    <td className="border px-4 py-2">{medal.event}</td>
+                    <td className="border px-4 py-2">{medal.date instanceof Date ? medal.date.toISOString().split('T')[0] : medal.date}</td>
+                    <td className="border px-4 py-2">{medal.eventName}</td>
                     <td className="border px-4 py-2">{medal.location}</td>
                     <td className="border px-4 py-2">{medal.division}</td>
                     <td className="border px-4 py-2">{medal.result}</td>
-                    <td className="border px-4 py-2">{medal.image ? <img src={medal.image} alt="Medal" className="w-10 h-10" /> : 'No image'}</td>
+                    <td className="border px-4 py-2">{medal.imageUrl ? <img src={medal.imageUrl} alt="Medal" className="w-10 h-10" /> : 'No image'}</td>
                   </tr>
                 ))}
               </tbody>

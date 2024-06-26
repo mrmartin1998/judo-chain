@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 contract CompetitionRecords {
     struct Medal {
-        string eventName; 
+        string eventName;
         string location;
         string division;
         string result;
@@ -12,7 +12,7 @@ contract CompetitionRecords {
     }
 
     struct Match {
-        string eventName; 
+        string eventName;
         string location;
         string division;
         string opponent;
@@ -63,5 +63,13 @@ contract CompetitionRecords {
             youtubeId: youtubeId,
             date: date
         }));
+    }
+
+    function getMedals(address user) public view returns (Medal[] memory) {
+        return medals[user];
+    }
+
+    function getMatches(address user) public view returns (Match[] memory) {
+        return matches[user];
     }
 }

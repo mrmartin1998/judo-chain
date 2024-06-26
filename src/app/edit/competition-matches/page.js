@@ -4,14 +4,14 @@ import { useEffect, useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import web3 from '../../utils/web3';
-import { judokaRegistryContract } from '../../utils/contract'; // Correct import
+import { competitionRecordsContract } from '../../utils/contract';
 import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/Sidebar';
 
 const CompetitionMatches = () => {
   const [account, setAccount] = useState('');
   const [match, setMatch] = useState({
-    event: '',
+    eventName: '',
     location: '',
     division: '',
     opponent: '',
@@ -33,9 +33,13 @@ const CompetitionMatches = () => {
 
     const fetchMatches = async (address) => {
       try {
-        const data = await judokaRegistryContract.methods.getMatches(address).call();
+        const data = await competitionRecordsContract.methods.getMatches(address).call();
         if (data) {
-          setMatches(data);
+          const formattedMatches = data.map(match => ({
+            ...match,
+            date: new Date(match.date)
+          }));
+          setMatches(formattedMatches);
         }
       } catch (error) {
         console.error("Error fetching matches:", error);
@@ -58,8 +62,8 @@ const CompetitionMatches = () => {
 
   const handleSaveMatch = async () => {
     try {
-      await judokaRegistryContract.methods.addMatch(
-        match.event,
+      await competitionRecordsContract.methods.addMatch(
+        match.eventName,
         match.location,
         match.division,
         match.opponent,
@@ -69,9 +73,9 @@ const CompetitionMatches = () => {
         match.date.toISOString().split('T')[0] // convert date to string
       ).send({ from: account });
 
-      setMatches([...matches, match]);
+      setMatches([...matches, { ...match, date: match.date.toISOString().split('T')[0] }]);
       setMatch({
-        event: '',
+        eventName: '',
         location: '',
         division: '',
         opponent: '',
@@ -100,8 +104,8 @@ const CompetitionMatches = () => {
               <label className="block text-sm font-medium text-gray-700">Event</label>
               <input
                 type="text"
-                name="event"
-                value={match.event}
+                name="eventName"
+                value={match.eventName}
                 onChange={handleInputChange}
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                 style={{ color: 'black', backgroundColor: 'white' }}
@@ -212,8 +216,8 @@ const CompetitionMatches = () => {
               <tbody>
                 {matches.map((match, index) => (
                   <tr key={index}>
-                    <td className="border px-4 py-2">{match.date}</td>
-                    <td className="border px-4 py-2">{match.event}</td>
+                    <td className="border px-4 py-2">{match.date instanceof Date ? match.date.toISOString().split('T')[0] : match.date}</td>
+                    <td className="border px-4 py-2">{match.eventName}</td>
                     <td className="border px-4 py-2">{match.location}</td>
                     <td className="border px-4 py-2">{match.division}</td>
                     <td className="border px-4 py-2">{match.opponent}</td>
