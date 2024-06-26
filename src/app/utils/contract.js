@@ -7,27 +7,18 @@ import CompetitionRecords from '../../../build/contracts/CompetitionRecords.json
 import Verification from '../../../build/contracts/Verification.json';
 import EventParticipation from '../../../build/contracts/EventParticipation.json';
 import CoachRegistry from '../../../build/contracts/CoachRegistry.json';
+import InjuryRegistry from '../../../build/contracts/InjuryRegistry.json';
 
 // Deployed contract addresses
-const judokaRegistryAddress = '0x29FaDCf7B417Ae51056FC6bcf421E36BCE2C8175';
-const votingContractAddress = '0x48ec6d7e9507F6cb93faED873909991742D61E54';
-const profileManagementAddress = '0x621B283305a89978b10E621102Ac3ed436D50DE7';
-const contentManagementAddress = '0x35889C8fE6bb35aA27255cE9A7d2B31Be285732C';
-const competitionRecordsAddress = '0x4740EaeCb75Ce34716d07b4442Ae09a95F3d7733';
-const verificationAddress = '0xB96D8772046FD988f4CF925BF6cf25F0d98C08C1';
-const eventParticipationAddress = '0xA43EaD38F384a35b6001E49daBB1067aC148894a';
-const coachRegistryAddress = '0x855E83d268962F4860CFDC6213e4D31A7d651fD7';
-
-/*
-JudokaRegistry: 0x29FaDCf7B417Ae51056FC6bcf421E36BCE2C8175
-VotingContract: 0x48ec6d7e9507F6cb93faED873909991742D61E54
-ProfileManagement: 0x621B283305a89978b10E621102Ac3ed436D50DE7
-ContentManagement: 0x35889C8fE6bb35aA27255cE9A7d2B31Be285732C
-CompetitionRecords: 0x4740EaeCb75Ce34716d07b4442Ae09a95F3d7733
-Verification: 0xB96D8772046FD988f4CF925BF6cf25F0d98C08C1
-EventParticipation: 0xA43EaD38F384a35b6001E49daBB1067aC148894a
-CoachRegistry: 0x855E83d268962F4860CFDC6213e4D31A7d651fD7
-*/
+const judokaRegistryAddress = '0x09F5DaF85BaE519ee714B98a99d54895C38E8A10';
+const votingContractAddress = '0x7DD27366b2C497dC847C489168a690588A7A2081';
+const profileManagementAddress = '0x53B4119cbCa21F484Ed0B879584CCaAC343e6cb5';
+const contentManagementAddress = '0x13a56A9E1285226CceBd75F59b025ba19942432c';
+const competitionRecordsAddress = '0xff8f80F502ebe9Fd38A9502BAf3AC04E8F5d5438';
+const verificationAddress = '0xE14888d800e9C970124e8E7c68Ee8003213Ad70e';
+const eventParticipationAddress = '0x9022A82467E02c50Aa2541d4013795976703B33f';
+const coachRegistryAddress = '0xd1a7733385F904241550CcdE1535e32eC097d723';
+const injuryRegistryAddress = '0xBE5368522Fc17B7cAAB6dB5A5fF2B20bef53Edf2';
 
 const judokaRegistryContract = new web3.eth.Contract(JudokaRegistry.abi, judokaRegistryAddress);
 const votingContract = new web3.eth.Contract(VotingContract.abi, votingContractAddress);
@@ -37,6 +28,7 @@ const competitionRecordsContract = new web3.eth.Contract(CompetitionRecords.abi,
 const verificationContract = new web3.eth.Contract(Verification.abi, verificationAddress);
 const eventParticipationContract = new web3.eth.Contract(EventParticipation.abi, eventParticipationAddress);
 const coachRegistryContract = new web3.eth.Contract(CoachRegistry.abi, coachRegistryAddress);
+const injuryRegistryContract = new web3.eth.Contract(InjuryRegistry.abi, injuryRegistryAddress);
 
 export {
     judokaRegistryContract,
@@ -46,5 +38,6 @@ export {
     competitionRecordsContract,
     verificationContract,
     eventParticipationContract,
-    coachRegistryContract
+    coachRegistryContract,
+    injuryRegistryContract
 };
