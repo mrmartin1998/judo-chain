@@ -8,17 +8,19 @@ import Verification from '../../../build/contracts/Verification.json';
 import EventParticipation from '../../../build/contracts/EventParticipation.json';
 import CoachRegistry from '../../../build/contracts/CoachRegistry.json';
 import InjuryRegistry from '../../../build/contracts/InjuryRegistry.json';
+import ForumContract from '../../../build/contracts/ForumContract.json';
 
 // Deployed contract addresses
-const judokaRegistryAddress = '0x09F5DaF85BaE519ee714B98a99d54895C38E8A10';
-const votingContractAddress = '0x7DD27366b2C497dC847C489168a690588A7A2081';
-const profileManagementAddress = '0x53B4119cbCa21F484Ed0B879584CCaAC343e6cb5';
-const contentManagementAddress = '0x13a56A9E1285226CceBd75F59b025ba19942432c';
-const competitionRecordsAddress = '0xff8f80F502ebe9Fd38A9502BAf3AC04E8F5d5438';
-const verificationAddress = '0xE14888d800e9C970124e8E7c68Ee8003213Ad70e';
-const eventParticipationAddress = '0x9022A82467E02c50Aa2541d4013795976703B33f';
-const coachRegistryAddress = '0xd1a7733385F904241550CcdE1535e32eC097d723';
-const injuryRegistryAddress = '0xBE5368522Fc17B7cAAB6dB5A5fF2B20bef53Edf2';
+const judokaRegistryAddress = '0xFbEcc7D7c0b38283B755d41d2B11b360431F89A0';
+const votingContractAddress = '0xF99c6290C643FAB7560feB2a4be729F6e8A2b9Ac';
+const profileManagementAddress = '0xcAF8fFF3170bdd28B6e7C9c2C1249bb53743dD6D';
+const contentManagementAddress = '0x9Abd817A28b31385241f12be6442e2E61aeF1bB1';
+const competitionRecordsAddress = '0xb9B5e61f22780C4E847384d06861f3FB0A7757E3';
+const verificationAddress = '0x1FDf6A50B927FF3dc97A3Cc431056D7a022418fc';
+const eventParticipationAddress = '0x2d4F7699da15C7CcfdcCAA88c431a848891c4B99';
+const coachRegistryAddress = '0x977f61724b8Dd4f670633a86A672abEB1E922e2E';
+const injuryRegistryAddress = '0x7A29cDb80259910887380aeA3F3A9E76ECB6AB5d';
+const forumContractAddress = '0x2512D3a34bcEfDDA545fae548939C98D08623349';
 
 const judokaRegistryContract = new web3.eth.Contract(JudokaRegistry.abi, judokaRegistryAddress);
 const votingContract = new web3.eth.Contract(VotingContract.abi, votingContractAddress);
@@ -29,6 +31,7 @@ const verificationContract = new web3.eth.Contract(Verification.abi, verificatio
 const eventParticipationContract = new web3.eth.Contract(EventParticipation.abi, eventParticipationAddress);
 const coachRegistryContract = new web3.eth.Contract(CoachRegistry.abi, coachRegistryAddress);
 const injuryRegistryContract = new web3.eth.Contract(InjuryRegistry.abi, injuryRegistryAddress);
+const forumContract = new web3.eth.Contract(ForumContract.abi, forumContractAddress);
 
 export {
     judokaRegistryContract,
@@ -39,5 +42,6 @@ export {
     verificationContract,
     eventParticipationContract,
     coachRegistryContract,
-    injuryRegistryContract
+    injuryRegistryContract,
+    forumContract
 };

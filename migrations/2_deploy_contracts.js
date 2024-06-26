@@ -7,6 +7,7 @@ const Verification = artifacts.require("Verification");
 const EventParticipation = artifacts.require("EventParticipation");
 const CoachRegistry = artifacts.require("CoachRegistry");
 const InjuryRegistry = artifacts.require("InjuryRegistry");
+const ForumContract = artifacts.require("ForumContract");
 
 module.exports = async function (deployer) {
   await deployer.deploy(JudokaRegistry);
@@ -36,6 +37,9 @@ module.exports = async function (deployer) {
   await deployer.deploy(InjuryRegistry);
   const injuryRegistryInstance = await InjuryRegistry.deployed();
 
+  await deployer.deploy(ForumContract);
+  const forumContractInstance = await ForumContract.deployed();
+
   console.log("Deployed Contracts Addresses:");
   console.log("JudokaRegistry:", judokaRegistryInstance.address);
   console.log("VotingContract:", votingContractInstance.address);
@@ -46,4 +50,5 @@ module.exports = async function (deployer) {
   console.log("EventParticipation:", eventParticipationInstance.address);
   console.log("CoachRegistry:", coachRegistryInstance.address);
   console.log("InjuryRegistry:", injuryRegistryInstance.address);
+  console.log("ForumContract:", forumContractInstance.address);
 };
