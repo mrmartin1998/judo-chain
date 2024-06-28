@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Navbar from '../../components/Navbar';
 import Profile from '../../components/Profile';
-import { judokaRegistryContract, votingContract } from '../../utils/contract';
+import { judokaRegistryContract, votingContract, messagingContract } from '../../utils/contract';
 import web3 from '../../utils/web3';
 
 export default function ProfilePage() {
@@ -14,6 +14,20 @@ export default function ProfilePage() {
   const [votes, setVotes] = useState([]);
   const [votePoints, setVotePoints] = useState(0);
   const [castingVote, setCastingVote] = useState(false);
+  const [account, setAccount] = useState('');
+
+  useEffect(() => {
+    const loadAccount = async () => {
+      const accounts = await web3.eth.getAccounts();
+      if (accounts.length > 0) {
+        setAccount(accounts[0]);
+      }
+    };
+
+    if (window.ethereum) {
+      loadAccount();
+    }
+  }, []);
 
   useEffect(() => {
     if (!address) {
@@ -29,29 +43,13 @@ export default function ProfilePage() {
         console.log("Judoka data:", data);
         setProfileData(data);
 
-        console.log("Available methods:", votingContract.methods);
+        const points = await votingContract.methods.getReceivedVotePoints(address).call();
+        console.log("Received vote points:", points);
+        setVotePoints(points);
 
-        // Check and log all methods in the votingContract
-        const contractMethods = Object.keys(votingContract.methods);
-        console.log("Contract Methods:", contractMethods);
-
-        // Check if the method exists and fetch data accordingly
-        if (contractMethods.includes('getReceivedVotePoints')) {
-          const points = await votingContract.methods.getReceivedVotePoints(address).call();
-          console.log("Received vote points:", points);
-          setVotePoints(points);
-        } else {
-          console.error("getReceivedVotePoints method not found in contract.");
-        }
-
-        if (contractMethods.includes('getVotesForUser')) {
-          const voteList = await votingContract.methods.getVotesForUser(address).call();
-          console.log("Vote list:", voteList);
-          setVotes(voteList);
-        } else {
-          console.error("getVotesForUser method not found in contract.");
-        }
-
+        const voteList = await votingContract.methods.getVotesForUser(address).call();
+        console.log("Vote list:", voteList);
+        setVotes(voteList);
       } catch (error) {
         console.error("Error fetching profile data:", error.message);
         console.error("Error stack trace:", error.stack);
@@ -72,28 +70,30 @@ export default function ProfilePage() {
       await votingContract.methods.voteForUser(address, isVerified).send({ from: accounts[0] });
       alert('Vote cast successfully');
 
-      const contractMethods = Object.keys(votingContract.methods);
-      if (contractMethods.includes('getReceivedVotePoints')) {
-        const points = await votingContract.methods.getReceivedVotePoints(address).call();
-        console.log("Updated received vote points:", points);
-        setVotePoints(points);
-      } else {
-        console.error("getReceivedVotePoints method not found in contract.");
-      }
+      const points = await votingContract.methods.getReceivedVotePoints(address).call();
+      console.log("Updated received vote points:", points);
+      setVotePoints(points);
 
-      if (contractMethods.includes('getVotesForUser')) {
-        const voteList = await votingContract.methods.getVotesForUser(address).call();
-        console.log("Updated vote list:", voteList);
-        setVotes(voteList);
-      } else {
-        console.error("getVotesForUser method not found in contract.");
-      }
+      const voteList = await votingContract.methods.getVotesForUser(address).call();
+      console.log("Updated vote list:", voteList);
+      setVotes(voteList);
     } catch (error) {
       console.error('Error casting vote:', error.message);
       console.error('Error stack trace:', error.stack);
       alert('Failed to cast vote');
     } finally {
       setCastingVote(false);
+    }
+  };
+
+  const handleAddFriend = async () => {
+    try {
+      await messagingContract.methods.sendFriendRequest(address).send({ from: account });
+      alert('Friend request sent successfully');
+    } catch (error) {
+      console.error('Error sending friend request:', error.message);
+      console.error('Error stack trace:', error.stack);
+      alert('Failed to send friend request');
     }
   };
 
@@ -130,6 +130,14 @@ export default function ProfilePage() {
         <header className="bg-white shadow-md mb-6">
           <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
             <h1 className="text-3xl font-bold text-gray-900">Profile of {profileData.firstName} {profileData.lastName}</h1>
+            {account && account !== address && (
+              <button
+                onClick={handleAddFriend}
+                className="bg-blue-500 text-white py-2 px-4 rounded mt-4"
+              >
+                Add Friend
+              </button>
+            )}
           </div>
         </header>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
