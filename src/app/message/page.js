@@ -15,6 +15,7 @@ const Messaging = () => {
   const [judokas, setJudokas] = useState([]);
   const [friendRequests, setFriendRequests] = useState([]);
   const [friends, setFriends] = useState([]);
+  const [conversationContent, setConversationContent] = useState('');
 
   const fetchMessages = async (address) => {
     try {
@@ -29,30 +30,18 @@ const Messaging = () => {
             sender: message[0],
             receiver: message[1],
             content: message[2],
+            timestamp: new Date().toLocaleTimeString(), // Placeholder for actual timestamp
             senderName: `${sender.firstName} ${sender.lastName}`,
             receiverName: `${receiver.firstName} ${receiver.lastName}`
           });
         }
       }
       setMessages(messageArray);
-      organizeConversations(messageArray);
+      groupConversations(messageArray);
     } catch (error) {
       console.error("Error fetching messages:", error.message);
       console.error("Error stack trace:", error.stack);
     }
-  };
-
-  const organizeConversations = (messages) => {
-    const convs = {};
-    messages.forEach(message => {
-      const { sender, receiver } = message;
-      const conversationKey = [sender, receiver].sort().join('_');
-      if (!convs[conversationKey]) {
-        convs[conversationKey] = [];
-      }
-      convs[conversationKey].push(message);
-    });
-    setConversations(convs);
   };
 
   const fetchFriendRequests = async (address) => {
@@ -119,6 +108,22 @@ const Messaging = () => {
     }
   };
 
+  const groupConversations = (messages) => {
+    const grouped = messages.reduce((acc, message) => {
+      const key = [message.sender, message.receiver].sort().join('_');
+      if (!acc[key]) {
+        acc[key] = [];
+      }
+      acc[key].push(message);
+      return acc;
+    }, {});
+    setConversations(grouped);
+  };
+
+  const selectConversation = (conversationKey) => {
+    setSelectedConversation(conversations[conversationKey]);
+  };
+
   useEffect(() => {
     const loadAccount = async () => {
       try {
@@ -141,10 +146,10 @@ const Messaging = () => {
     }
   }, []);
 
-  const sendMessage = async () => {
+  const sendMessage = async (recipient, messageContent) => {
     try {
       const accounts = await web3.eth.getAccounts();
-      await messagingContract.methods.sendMessage(recipient, content).send({ from: accounts[0] });
+      await messagingContract.methods.sendMessage(recipient, messageContent).send({ from: accounts[0] });
       setContent('');
       await fetchMessages(accounts[0]);
     } catch (error) {
@@ -166,10 +171,6 @@ const Messaging = () => {
     }
   };
 
-  const selectConversation = (key) => {
-    setSelectedConversation(conversations[key]);
-  };
-
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
       <Navbar />
@@ -177,7 +178,7 @@ const Messaging = () => {
         <div className="bg-white p-8 shadow rounded-lg">
           <h1 className="text-3xl font-bold mb-6 text-black">Messaging</h1>
           <div className="mb-6">
-            <h2 className="text-2xl font-bold mb-4 text-black">Send a Message</h2>
+            <h2 className="text-2xl font-bold mb-4 text-black">Send a New Message</h2>
             <select
               value={recipient}
               onChange={(e) => setRecipient(e.target.value)}
@@ -199,72 +200,94 @@ const Messaging = () => {
               style={{ color: 'black', backgroundColor: 'white' }}
             />
             <button
-              onClick={sendMessage}
+              onClick={() => sendMessage(recipient, content)}
               className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4"
             >
               Send
             </button>
           </div>
           <div className="flex">
-            <div className="w-1/4">
+            <div className="w-1/3 pr-4">
               <h2 className="text-2xl font-bold mb-4 text-black">Conversations</h2>
-              {Object.keys(conversations).map((key, index) => (
-                <div key={index} className="mb-6">
-                  <button
+              {Object.keys(conversations).map((key) => {
+                const [user1, user2] = key.split('_');
+                const friend = user1 === account ? user2 : user1;
+                const friendName = friends.find(f => f.address === friend)?.name || friend;
+                return (
+                  <div
+                    key={key}
+                    className={`mb-4 p-4 rounded cursor-pointer ${selectedConversation === conversations[key] ? 'bg-blue-200' : 'bg-gray-200'}`}
                     onClick={() => selectConversation(key)}
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                   >
-                    {conversations[key][0].senderName} & {conversations[key][0].receiverName}
-                  </button>
-                </div>
-              ))}
+                    <p className="text-black">{friendName}</p>
+                  </div>
+                );
+              })}
             </div>
-            <div className="w-3/4">
-              {selectedConversation ? (
-                <>
-                  <h2 className="text-2xl font-bold mb-4 text-black">Messages</h2>
-                  {selectedConversation.map((message, index) => (
+            <div className="w-2/3 pl-4">
+              <h2 className="text-2xl font-bold mb-4 text-black">Messages</h2>
+              <div className="message-area bg-gray-200 p-4 rounded shadow overflow-y-auto max-h-96">
+                {selectedConversation && selectedConversation.length > 0 ? (
+                  selectedConversation.map((message, index) => (
                     <div key={index} className="mb-6">
-                      <div className="bg-gray-200 p-6 rounded shadow">
+                      <div className="bg-white p-6 rounded shadow">
                         <p className="text-black mb-4">{message.content}</p>
                         <p className="text-sm text-gray-600 mb-2">From: {message.senderName} ({message.sender})</p>
-                        <p className="text-sm text-gray-600">To: {message.receiverName} ({message.receiver})</p>
+                        <p className="text-sm text-gray-600 mb-2">To: {message.receiverName} ({message.receiver})</p>
+                        <p className="text-sm text-gray-600">Sent at: {message.timestamp}</p>
                       </div>
                     </div>
-                  ))}
-                </>
-              ) : (
-                <h2 className="text-2xl font-bold mb-4 text-black">Select a conversation</h2>
+                  ))
+                ) : (
+                  <p className="text-gray-600">Select a conversation to view messages</p>
+                )}
+              </div>
+              {selectedConversation && (
+                <div className="mt-4">
+                  <textarea
+                    placeholder="Message Content"
+                    value={conversationContent}
+                    onChange={(e) => setConversationContent(e.target.value)}
+                    className="mt-1 block w-full h-24 border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    style={{ color: 'black', backgroundColor: 'white' }}
+                  />
+                  <button
+                    onClick={() => sendMessage(selectedConversation[0].receiver, conversationContent)}
+                    className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4"
+                  >
+                    Send
+                  </button>
+                </div>
               )}
             </div>
           </div>
-          <div>
-            <h2 className="text-2xl font-bold mb-4 text-black">Friend Requests</h2>
-            {friendRequests.map((request, index) => (
-              <div key={index} className="mb-6">
-                <div className="bg-gray-200 p-6 rounded shadow">
-                  <p className="text-black mb-4">From: {request.requesterName} ({request.requester})</p>
-                  <button
-                    onClick={() => acceptFriendRequest(request.requestId)}
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4"
-                  >
-                    Accept
-                  </button>
-                </div>
+        </div>
+        <div className="mt-6 bg-white p-8 shadow rounded-lg">
+          <h2 className="text-2xl font-bold mb-4 text-black">Friend Requests</h2>
+          {friendRequests.map((request, index) => (
+            <div key={index} className="mb-6">
+              <div className="bg-gray-200 p-6 rounded shadow">
+                <p className="text-black mb-4">From: {request.requesterName} ({request.requester})</p>
+                <button
+                  onClick={() => acceptFriendRequest(request.requestId)}
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4"
+                >
+                  Accept
+                </button>
               </div>
-            ))}
-          </div>
-          <div>
-            <h2 className="text-2xl font-bold mb-4 text-black">Friends</h2>
-            {friends.map((friend, index) => (
-              <div key={index} className="mb-6">
-                <div className="bg-gray-200 p-6 rounded shadow">
-                  <p className="text-black mb-4">{friend.name}</p>
-                  <p className="text-sm text-gray-600 mb-2">{friend.address}</p>
-                </div>
+            </div>
+          ))}
+        </div>
+        <div className="mt-6 bg-white p-8 shadow rounded-lg">
+          <h2 className="text-2xl font-bold mb-4 text-black">Friends</h2>
+          {friends.map((friend, index) => (
+            <div key={index} className="mb-6">
+              <div className="bg-gray-200 p-6 rounded shadow">
+                <p className="text-black mb-4">{friend.name}</p>
+                <p className="text-sm text-gray-600 mb-2">{friend.address}</p>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       </main>
     </div>
