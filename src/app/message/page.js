@@ -8,6 +8,8 @@ import Navbar from '../components/Navbar';
 const Messaging = () => {
   const [account, setAccount] = useState('');
   const [messages, setMessages] = useState([]);
+  const [conversations, setConversations] = useState({});
+  const [selectedConversation, setSelectedConversation] = useState(null);
   const [recipient, setRecipient] = useState('');
   const [content, setContent] = useState('');
   const [judokas, setJudokas] = useState([]);
@@ -33,10 +35,24 @@ const Messaging = () => {
         }
       }
       setMessages(messageArray);
+      organizeConversations(messageArray);
     } catch (error) {
       console.error("Error fetching messages:", error.message);
       console.error("Error stack trace:", error.stack);
     }
+  };
+
+  const organizeConversations = (messages) => {
+    const convs = {};
+    messages.forEach(message => {
+      const { sender, receiver } = message;
+      const conversationKey = [sender, receiver].sort().join('_');
+      if (!convs[conversationKey]) {
+        convs[conversationKey] = [];
+      }
+      convs[conversationKey].push(message);
+    });
+    setConversations(convs);
   };
 
   const fetchFriendRequests = async (address) => {
@@ -150,6 +166,10 @@ const Messaging = () => {
     }
   };
 
+  const selectConversation = (key) => {
+    setSelectedConversation(conversations[key]);
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
       <Navbar />
@@ -185,17 +205,38 @@ const Messaging = () => {
               Send
             </button>
           </div>
-          <div>
-            <h2 className="text-2xl font-bold mb-4 text-black">Messages</h2>
-            {messages.map((message, index) => (
-              <div key={index} className="mb-6">
-                <div className="bg-gray-200 p-6 rounded shadow">
-                  <p className="text-black mb-4">{message.content}</p>
-                  <p className="text-sm text-gray-600 mb-2">From: {message.senderName} ({message.sender})</p>
-                  <p className="text-sm text-gray-600">To: {message.receiverName} ({message.receiver})</p>
+          <div className="flex">
+            <div className="w-1/4">
+              <h2 className="text-2xl font-bold mb-4 text-black">Conversations</h2>
+              {Object.keys(conversations).map((key, index) => (
+                <div key={index} className="mb-6">
+                  <button
+                    onClick={() => selectConversation(key)}
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                  >
+                    {conversations[key][0].senderName} & {conversations[key][0].receiverName}
+                  </button>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
+            <div className="w-3/4">
+              {selectedConversation ? (
+                <>
+                  <h2 className="text-2xl font-bold mb-4 text-black">Messages</h2>
+                  {selectedConversation.map((message, index) => (
+                    <div key={index} className="mb-6">
+                      <div className="bg-gray-200 p-6 rounded shadow">
+                        <p className="text-black mb-4">{message.content}</p>
+                        <p className="text-sm text-gray-600 mb-2">From: {message.senderName} ({message.sender})</p>
+                        <p className="text-sm text-gray-600">To: {message.receiverName} ({message.receiver})</p>
+                      </div>
+                    </div>
+                  ))}
+                </>
+              ) : (
+                <h2 className="text-2xl font-bold mb-4 text-black">Select a conversation</h2>
+              )}
+            </div>
           </div>
           <div>
             <h2 className="text-2xl font-bold mb-4 text-black">Friend Requests</h2>
