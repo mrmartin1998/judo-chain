@@ -20,13 +20,17 @@ const Messaging = () => {
       const messageArray = [];
       for (let i = 0; i < messageIds.length; i++) {
         const message = await messagingContract.methods.getMessage(messageIds[i]).call();
-        const sender = await judokaRegistryContract.methods.getJudoka(message.sender).call();
-        const receiver = await judokaRegistryContract.methods.getJudoka(message.receiver).call();
-        messageArray.push({
-          ...message,
-          senderName: `${sender.firstName} ${sender.lastName}`,
-          receiverName: `${receiver.firstName} ${receiver.lastName}`
-        });
+        if (message) {
+          const sender = await judokaRegistryContract.methods.getJudoka(message[0]).call();
+          const receiver = await judokaRegistryContract.methods.getJudoka(message[1]).call();
+          messageArray.push({
+            sender: message[0],
+            receiver: message[1],
+            content: message[2],
+            senderName: `${sender.firstName} ${sender.lastName}`,
+            receiverName: `${receiver.firstName} ${receiver.lastName}`
+          });
+        }
       }
       setMessages(messageArray);
     } catch (error) {
