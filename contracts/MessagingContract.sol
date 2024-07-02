@@ -6,18 +6,16 @@ contract MessagingContract {
         address sender;
         address receiver;
         string content;
-        uint256 timestamp;
     }
 
     struct FriendRequest {
         address requester;
         address receiver;
-        uint256 timestamp;
     }
 
     Message[] public messages;
     FriendRequest[] public friendRequests;
-
+    mapping(address => address[]) public friends;
     mapping(address => uint256[]) public userMessages;
     mapping(address => uint256[]) public userFriendRequests;
 
@@ -26,7 +24,8 @@ contract MessagingContract {
     event FriendRequestAccepted(address indexed requester, address indexed receiver);
 
     function sendMessage(address _receiver, string memory _content) public {
-        messages.push(Message(msg.sender, _receiver, _content, block.timestamp));
+        require(isFriend(msg.sender, _receiver), "You can only send messages to friends.");
+        messages.push(Message(msg.sender, _receiver, _content));
         uint256 messageId = messages.length - 1;
         userMessages[msg.sender].push(messageId);
         userMessages[_receiver].push(messageId);
@@ -34,9 +33,9 @@ contract MessagingContract {
         emit MessageSent(msg.sender, _receiver, messageId);
     }
 
-    function getMessage(uint256 _messageId) public view returns (address, address, string memory, uint256) {
+    function getMessage(uint256 _messageId) public view returns (address, address, string memory) {
         Message memory message = messages[_messageId];
-        return (message.sender, message.receiver, message.content, message.timestamp);
+        return (message.sender, message.receiver, message.content);
     }
 
     function getUserMessages(address _user) public view returns (uint256[] memory) {
@@ -44,16 +43,17 @@ contract MessagingContract {
     }
 
     function sendFriendRequest(address _receiver) public {
-        friendRequests.push(FriendRequest(msg.sender, _receiver, block.timestamp));
+        require(!isFriend(msg.sender, _receiver), "You are already friends.");
+        friendRequests.push(FriendRequest(msg.sender, _receiver));
         uint256 requestId = friendRequests.length - 1;
         userFriendRequests[_receiver].push(requestId);
 
         emit FriendRequestSent(msg.sender, _receiver, requestId);
     }
 
-    function getFriendRequest(uint256 _requestId) public view returns (address, address, uint256) {
+    function getFriendRequest(uint256 _requestId) public view returns (address, address) {
         FriendRequest memory request = friendRequests[_requestId];
-        return (request.requester, request.receiver, request.timestamp);
+        return (request.requester, request.receiver);
     }
 
     function getUserFriendRequests(address _user) public view returns (uint256[] memory) {
@@ -64,8 +64,25 @@ contract MessagingContract {
         FriendRequest memory request = friendRequests[_requestId];
         require(request.receiver == msg.sender, "Only the receiver can accept the friend request");
 
-        // Logic to add friends to each other's friend list should be added here
+        friends[request.requester].push(request.receiver);
+        friends[request.receiver].push(request.requester);
+
+        delete friendRequests[_requestId];
 
         emit FriendRequestAccepted(request.requester, request.receiver);
+    }
+
+    function getUserFriends(address _user) public view returns (address[] memory) {
+        return friends[_user];
+    }
+
+    function isFriend(address _user, address _friend) public view returns (bool) {
+        address[] memory userFriends = friends[_user];
+        for (uint256 i = 0; i < userFriends.length; i++) {
+            if (userFriends[i] == _friend) {
+                return true;
+            }
+        }
+        return false;
     }
 }

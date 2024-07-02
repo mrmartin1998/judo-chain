@@ -12,18 +12,10 @@ const Messaging = () => {
   const [content, setContent] = useState('');
   const [judokas, setJudokas] = useState([]);
   const [friendRequests, setFriendRequests] = useState([]);
+  const [friends, setFriends] = useState([]);
 
-  useEffect(() => {
-    const loadAccount = async () => {
-      const accounts = await web3.eth.getAccounts();
-      if (accounts.length > 0) {
-        setAccount(accounts[0]);
-        fetchMessages(accounts[0]);
-        fetchFriendRequests(accounts[0]);
-      }
-    };
-
-    const fetchMessages = async (address) => {
+  const fetchMessages = async (address) => {
+    try {
       const messageIds = await messagingContract.methods.getUserMessages(address).call();
       const messageArray = [];
       for (let i = 0; i < messageIds.length; i++) {
@@ -37,23 +29,40 @@ const Messaging = () => {
         });
       }
       setMessages(messageArray);
-    };
+    } catch (error) {
+      console.error("Error fetching messages:", error.message);
+      console.error("Error stack trace:", error.stack);
+    }
+  };
 
-    const fetchFriendRequests = async (address) => {
+  const fetchFriendRequests = async (address) => {
+    try {
       const requestIds = await messagingContract.methods.getUserFriendRequests(address).call();
       const requestArray = [];
       for (let i = 0; i < requestIds.length; i++) {
         const request = await messagingContract.methods.getFriendRequest(requestIds[i]).call();
-        const requester = await judokaRegistryContract.methods.getJudoka(request.requester).call();
-        requestArray.push({
-          ...request,
-          requesterName: `${requester.firstName} ${requester.lastName}`,
-        });
+        const requesterAddress = request[0];
+        if (web3.utils.isAddress(requesterAddress)) {
+          const requester = await judokaRegistryContract.methods.getJudoka(requesterAddress).call();
+          requestArray.push({
+            ...request,
+            requesterName: `${requester.firstName} ${requester.lastName}`,
+            requester: requesterAddress,
+            requestId: requestIds[i]  // Adding requestId to be used in acceptFriendRequest
+          });
+        } else {
+          console.error("Invalid requester address:", requesterAddress);
+        }
       }
       setFriendRequests(requestArray);
-    };
+    } catch (error) {
+      console.error("Error fetching friend requests:", error.message);
+      console.error("Error stack trace:", error.stack);
+    }
+  };
 
-    const fetchJudokas = async () => {
+  const fetchJudokas = async () => {
+    try {
       const userAddresses = await judokaRegistryContract.methods.getAllJudokas().call();
       const users = await Promise.all(
         userAddresses.map(async (address) => {
@@ -65,6 +74,45 @@ const Messaging = () => {
         })
       );
       setJudokas(users);
+    } catch (error) {
+      console.error("Error fetching judokas:", error.message);
+      console.error("Error stack trace:", error.stack);
+    }
+  };
+
+  const fetchFriends = async (address) => {
+    try {
+      const friendAddresses = await messagingContract.methods.getUserFriends(address).call();
+      const friendArray = await Promise.all(
+        friendAddresses.map(async (friendAddress) => {
+          const friend = await judokaRegistryContract.methods.getJudoka(friendAddress).call();
+          return {
+            address: friendAddress,
+            name: `${friend.firstName} ${friend.lastName}`,
+          };
+        })
+      );
+      setFriends(friendArray);
+    } catch (error) {
+      console.error("Error fetching friends:", error.message);
+      console.error("Error stack trace:", error.stack);
+    }
+  };
+
+  useEffect(() => {
+    const loadAccount = async () => {
+      try {
+        const accounts = await web3.eth.getAccounts();
+        if (accounts.length > 0) {
+          setAccount(accounts[0]);
+          await fetchMessages(accounts[0]);
+          await fetchFriendRequests(accounts[0]);
+          await fetchFriends(accounts[0]);
+        }
+      } catch (error) {
+        console.error("Error loading account:", error.message);
+        console.error("Error stack trace:", error.stack);
+      }
     };
 
     if (window.ethereum) {
@@ -74,16 +122,28 @@ const Messaging = () => {
   }, []);
 
   const sendMessage = async () => {
-    const accounts = await web3.eth.getAccounts();
-    await messagingContract.methods.sendMessage(recipient, content).send({ from: accounts[0] });
-    setContent('');
-    fetchMessages(accounts[0]);
+    try {
+      const accounts = await web3.eth.getAccounts();
+      await messagingContract.methods.sendMessage(recipient, content).send({ from: accounts[0] });
+      setContent('');
+      await fetchMessages(accounts[0]);
+    } catch (error) {
+      console.error("Error sending message:", error.message);
+      console.error("Error stack trace:", error.stack);
+    }
   };
 
   const acceptFriendRequest = async (requestId) => {
-    await messagingContract.methods.acceptFriendRequest(requestId).send({ from: account });
-    fetchFriendRequests(account);
-    alert('Friend request accepted');
+    try {
+      console.log("Accepting friend request with ID:", requestId);  // Log requestId to ensure it's correct
+      await messagingContract.methods.acceptFriendRequest(requestId).send({ from: account });
+      await fetchFriendRequests(account);  // Ensure the function is called correctly
+      await fetchFriends(account);  // Refresh the friends list
+      alert('Friend request accepted');
+    } catch (error) {
+      console.error("Error accepting friend request:", error.message);
+      console.error("Error stack trace:", error.stack);
+    }
   };
 
   return (
@@ -101,9 +161,9 @@ const Messaging = () => {
               style={{ color: 'black', backgroundColor: 'white' }}
             >
               <option value="">Select Recipient</option>
-              {judokas.map((judoka, index) => (
-                <option key={index} value={judoka.address}>
-                  {judoka.name}
+              {friends.map((friend, index) => (
+                <option key={index} value={friend.address}>
+                  {friend.name}
                 </option>
               ))}
             </select>
@@ -138,13 +198,24 @@ const Messaging = () => {
             {friendRequests.map((request, index) => (
               <div key={index} className="mb-6">
                 <div className="bg-gray-200 p-6 rounded shadow">
-                  <p className="text-black mb-4">Friend request from {request.requesterName}</p>
+                  <p className="text-black mb-4">From: {request.requesterName} ({request.requester})</p>
                   <button
-                    onClick={() => acceptFriendRequest(request.id)}
+                    onClick={() => acceptFriendRequest(request.requestId)}
                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4"
                   >
                     Accept
                   </button>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div>
+            <h2 className="text-2xl font-bold mb-4 text-black">Friends</h2>
+            {friends.map((friend, index) => (
+              <div key={index} className="mb-6">
+                <div className="bg-gray-200 p-6 rounded shadow">
+                  <p className="text-black mb-4">{friend.name}</p>
+                  <p className="text-sm text-gray-600 mb-2">{friend.address}</p>
                 </div>
               </div>
             ))}

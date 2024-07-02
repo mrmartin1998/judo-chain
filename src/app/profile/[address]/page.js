@@ -1,3 +1,5 @@
+// src/app/profile/[address]/page.js
+
 "use client";
 
 import { useEffect, useState } from 'react';

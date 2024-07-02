@@ -1,4 +1,3 @@
-
 import web3 from './web3';
 import CoachRegistry from '../../../build/contracts/CoachRegistry.json';
 import CompetitionRecords from '../../../build/contracts/CompetitionRecords.json';
@@ -14,42 +13,43 @@ import Verification from '../../../build/contracts/Verification.json';
 import VotingContract from '../../../build/contracts/VotingContract.json';
 
 // Deployed contract addresses
-const coachRegistryAddress = '0x701973C479273Bbc6A21B9d28eD7100e0aA56A31';
-const competitionRecordsAddress = '0x6950D2Da60eAb908AAd3739bd2fcb4D8136c2C07';
-const contentManagementAddress = '0xBfA4FF7b8e5dB34F0Cdd393fE9eb1C9A12426Eb8';
-const eventParticipationAddress = '0x2bc914aFAf60fE0Faf364f229963760a118f2B13';
+const coachRegistryAddress = '0x38CACc4139F163BB13e78Cc80819b001B7047F96';
+const competitionRecordsAddress = '0xd6306795697a48EA2D710c3875EbB7368f7e2e7f';
+const contentManagementAddress = '0x9006b356111597f17e3B4eF2890f420DA5ebC090';
+const eventParticipationAddress = '0xb418834D1423551a74d09591A3d20eDCeD982418';
 const forumContractAddress = '0x2512D3a34bcEfDDA545fae548939C98D08623349';
-const injuryRegistryAddress = '0xe6dD24049aEd59129c961F34BA09688612730622';
-const judokaRegistryAddress = '0x694b1e63a857FC5D5049FEbF6D56EdbEdc4ca8d2';
-const messagingContractAddress = '0xc72C092EB36395f3C88A362E105113eCE70543d3';
-const migrationsAddress = '0x2CCf391b8bC58030b603d174D83cfD5ef7Ecb8E9';
-const profileManagementAddress = '0x64A5c43Eebd8b80229980afDF65Bbae42797CFDE';
-const verificationAddress = '0x3D6Bb31971087668D3F0081a29397755A7E84542';
-const votingContractAddress = '0xe2bbeb5B40b5f0702CaD2499c63BAF0f36d39CD8';
+const injuryRegistryAddress = '0x583B1f7a9A7563Ab391AF3711D6B2884e61eC4Df';
+const judokaRegistryAddress = '0xCEB955458DC93f5Eb9ee5AD13fB33dFADaBdc39d';
+const messagingContractAddress = '0x33935322ab2DF5d9d3628FaFc110C450af2299a1';
+const migrationsAddress = '0x5C788d70833b035fDc0cA3fab9C30d31cE0C844e';
+const profileManagementAddress = '0xA3dcf4adc7b3B2C0B758bf7C91813764e67361Be';
+const verificationAddress = '0xF55380D296E2d8b8eDb1Fbb5286989BCaFd1601F';
+const votingContractAddress = '0x52bD90B41847Ec636C90F30D5E66bb0b31066998';
+
 const coachRegistryContract = new web3.eth.Contract(CoachRegistry.abi, coachRegistryAddress);
 const competitionRecordsContract = new web3.eth.Contract(CompetitionRecords.abi, competitionRecordsAddress);
 const contentManagementContract = new web3.eth.Contract(ContentManagement.abi, contentManagementAddress);
 const eventParticipationContract = new web3.eth.Contract(EventParticipation.abi, eventParticipationAddress);
-const forumContractContract = new web3.eth.Contract(ForumContract.abi, forumContractAddress);
+const forumContract = new web3.eth.Contract(ForumContract.abi, forumContractAddress);
 const injuryRegistryContract = new web3.eth.Contract(InjuryRegistry.abi, injuryRegistryAddress);
 const judokaRegistryContract = new web3.eth.Contract(JudokaRegistry.abi, judokaRegistryAddress);
-const messagingContractContract = new web3.eth.Contract(MessagingContract.abi, messagingContractAddress);
+const messagingContract = new web3.eth.Contract(MessagingContract.abi, messagingContractAddress);
 const migrationsContract = new web3.eth.Contract(Migrations.abi, migrationsAddress);
 const profileManagementContract = new web3.eth.Contract(ProfileManagement.abi, profileManagementAddress);
 const verificationContract = new web3.eth.Contract(Verification.abi, verificationAddress);
-const votingContractContract = new web3.eth.Contract(VotingContract.abi, votingContractAddress);
+const votingContract = new web3.eth.Contract(VotingContract.abi, votingContractAddress);
 
 export {
     coachRegistryContract,
     competitionRecordsContract,
     contentManagementContract,
     eventParticipationContract,
-    forumContractContract,
+    forumContract,
     injuryRegistryContract,
     judokaRegistryContract,
-    messagingContractContract,
+    messagingContract,
     migrationsContract,
     profileManagementContract,
     verificationContract,
-    votingContractContract
+    votingContract
 };
