@@ -13,7 +13,34 @@ const Forum = () => {
   const [account, setAccount] = useState('');
 
   useEffect(() => {
-    const loadPosts = async () => {
+    const loadBlockchainData = async () => {
+      try {
+        const accounts = await web3.eth.getAccounts();
+        if (accounts.length > 0) {
+          setAccount(accounts[0]);
+        }
+
+        const postCount = await forumContract.methods.postCount().call();
+        const postArray = [];
+        for (let i = 1; i <= postCount; i++) {
+          const post = await forumContract.methods.posts(i).call();
+          const author = await judokaRegistryContract.methods.getJudoka(post.author).call();
+          postArray.push({ ...post, authorName: `${author.firstName} ${author.lastName}` });
+        }
+        setPosts(postArray.reverse()); // Reverse the array to show most recent posts first
+      } catch (error) {
+        console.error("Error loading blockchain data:", error);
+      }
+    };
+
+    loadBlockchainData();
+  }, []);
+
+  const createPost = async () => {
+    try {
+      await forumContract.methods.createPost(title, content).send({ from: account });
+      setTitle('');
+      setContent('');
       const postCount = await forumContract.methods.postCount().call();
       const postArray = [];
       for (let i = 1; i <= postCount; i++) {
@@ -21,32 +48,10 @@ const Forum = () => {
         const author = await judokaRegistryContract.methods.getJudoka(post.author).call();
         postArray.push({ ...post, authorName: `${author.firstName} ${author.lastName}` });
       }
-      setPosts(postArray);
-    };
-
-    const loadAccount = async () => {
-      const accounts = await web3.eth.getAccounts();
-      if (accounts.length > 0) {
-        setAccount(accounts[0]);
-      }
-    };
-
-    loadPosts();
-    loadAccount();
-  }, []);
-
-  const createPost = async () => {
-    await forumContract.methods.createPost(title, content).send({ from: account });
-    setTitle('');
-    setContent('');
-    const postCount = await forumContract.methods.postCount().call();
-    const postArray = [];
-    for (let i = 1; i <= postCount; i++) {
-      const post = await forumContract.methods.posts(i).call();
-      const author = await judokaRegistryContract.methods.getJudoka(post.author).call();
-      postArray.push({ ...post, authorName: `${author.firstName} ${author.lastName}` });
+      setPosts(postArray.reverse()); // Reverse the array to show most recent posts first
+    } catch (error) {
+      console.error("Error creating post:", error);
     }
-    setPosts(postArray);
   };
 
   return (
@@ -106,6 +111,28 @@ const Post = ({ postId }) => {
 
   useEffect(() => {
     const loadComments = async () => {
+      try {
+        const postComments = await forumContract.methods.getPostComments(postId).call();
+        const commentsWithAuthors = await Promise.all(
+          postComments.map(async (comment) => {
+            const author = await judokaRegistryContract.methods.getJudoka(comment.author).call();
+            return { ...comment, authorName: `${author.firstName} ${author.lastName}` };
+          })
+        );
+        setComments(commentsWithAuthors);
+      } catch (error) {
+        console.error("Error loading comments:", error);
+      }
+    };
+
+    loadComments();
+  }, [postId]);
+
+  const createComment = async () => {
+    try {
+      const accounts = await web3.eth.getAccounts();
+      await forumContract.methods.createComment(postId, content).send({ from: accounts[0] });
+      setContent('');
       const postComments = await forumContract.methods.getPostComments(postId).call();
       const commentsWithAuthors = await Promise.all(
         postComments.map(async (comment) => {
@@ -114,23 +141,9 @@ const Post = ({ postId }) => {
         })
       );
       setComments(commentsWithAuthors);
-    };
-
-    loadComments();
-  }, [postId]);
-
-  const createComment = async () => {
-    const accounts = await web3.eth.getAccounts();
-    await forumContract.methods.createComment(postId, content).send({ from: accounts[0] });
-    setContent('');
-    const postComments = await forumContract.methods.getPostComments(postId).call();
-    const commentsWithAuthors = await Promise.all(
-      postComments.map(async (comment) => {
-        const author = await judokaRegistryContract.methods.getJudoka(comment.author).call();
-        return { ...comment, authorName: `${author.firstName} ${author.lastName}` };
-      })
-    );
-    setComments(commentsWithAuthors);
+    } catch (error) {
+      console.error("Error creating comment:", error);
+    }
   };
 
   return (

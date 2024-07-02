@@ -5,8 +5,8 @@ contract ForumContract {
     struct Post {
         uint id;
         address author;
+        string title;
         string content;
-        uint timestamp;
         uint[] commentIds;
     }
 
@@ -14,7 +14,6 @@ contract ForumContract {
         uint id;
         address author;
         string content;
-        uint timestamp;
     }
 
     uint public postCount = 0;
@@ -22,21 +21,21 @@ contract ForumContract {
     mapping(uint => Post) public posts;
     mapping(uint => Comment) public comments;
 
-    event PostCreated(uint id, address author, string content, uint timestamp);
-    event CommentCreated(uint id, address author, string content, uint timestamp, uint postId);
+    event PostCreated(uint id, address author, string title, string content);
+    event CommentCreated(uint id, address author, string content, uint postId);
 
-    function createPost(string memory content) public {
+    function createPost(string memory title, string memory content) public {
         postCount++;
-        posts[postCount] = Post(postCount, msg.sender, content, block.timestamp, new uint[](0));
-        emit PostCreated(postCount, msg.sender, content, block.timestamp);
+        posts[postCount] = Post(postCount, msg.sender, title, content, new uint[](0));
+        emit PostCreated(postCount, msg.sender, title, content);
     }
 
     function createComment(uint postId, string memory content) public {
         require(postId > 0 && postId <= postCount, "Post does not exist");
         commentCount++;
-        comments[commentCount] = Comment(commentCount, msg.sender, content, block.timestamp);
+        comments[commentCount] = Comment(commentCount, msg.sender, content);
         posts[postId].commentIds.push(commentCount);
-        emit CommentCreated(commentCount, msg.sender, content, block.timestamp, postId);
+        emit CommentCreated(commentCount, msg.sender, content, postId);
     }
 
     function getPostComments(uint postId) public view returns (Comment[] memory) {
