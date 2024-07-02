@@ -6,6 +6,7 @@ import Navbar from '../components/Navbar';
 import Profile from '../components/Profile';
 import web3 from '../utils/web3';
 import { judokaRegistryContract } from '../utils/contract';
+import Forum from '../components/Forum'; // Import the Forum component
 
 export default function Main() {
   const [account, setAccount] = useState('');
@@ -104,20 +105,10 @@ export default function Main() {
             </ul>
           </div>
 
-          {/* Forum Topics Section */}
+          {/* Forum Section */}
           <div className="col-span-1 md:col-span-3 bg-white shadow rounded-lg p-6 mt-4">
-            <h2 className="text-xl font-bold mb-4 text-gray-900">Latest Forum Topics</h2>
-            <ul className="list-disc list-inside text-gray-700">
-              {topics.length > 0 ? topics.map(topic => (
-                <li key={topic.id} className="mb-2">
-                  <Link href={`/forum/topic/${topic.id}`} legacyBehavior>
-                    <a className="text-blue-500 hover:underline">{topic.title}</a>
-                  </Link>
-                </li>
-              )) : (
-                <p className="text-gray-700">No forum topics available.</p>
-              )}
-            </ul>
+            <h2 className="text-xl font-bold mb-4 text-gray-900">Forum</h2>
+            <Forum allowPostCreation={false} /> {/* Render the Forum component without post creation */}
           </div>
         </div>
       </main>
