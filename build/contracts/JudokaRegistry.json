@@ -22295,12 +22295,12 @@
     "5777": {
       "events": {},
       "links": {},
-      "address": "0x3472aF9b04725cF9c7A72A1634CAC731d791eD0c",
-      "transactionHash": "0x1c64c557a2e82adf5e421fdff58daeeb02e49cf2ed17e1a72fd2f5d668a54e72"
+      "address": "0x8CA1dB236B6FFf7b71F65e506695606B5c66aEc2",
+      "transactionHash": "0x2be590acf461b5eaf2ad3d9ff2bcd2367c4e9147d231477b83f05f4601593bed"
     }
   },
   "schemaVersion": "3.4.16",
-  "updatedAt": "2024-07-02T12:59:11.486Z",
+  "updatedAt": "2024-07-03T10:36:28.893Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
