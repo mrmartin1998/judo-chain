@@ -13,18 +13,18 @@ import Verification from '../../../build/contracts/Verification.json';
 import VotingContract from '../../../build/contracts/VotingContract.json';
 
 // Deployed contract addresses
-const coachRegistryAddress = '0xad988440b3FB01486bDe193bc5bA192FEEF983EB';
-const competitionRecordsAddress = '0x9B0ef3143279bfD7728B5895b3d96407b831d699';
-const contentManagementAddress = '0x1938d113E45c409657652E4ef51535dE75847f83';
-const eventParticipationAddress = '0x327Ee2f6458A40889BAb83e4BeC00bc3eD44C23E';
-const forumContractAddress = '0x98CaBED3Ec743cE53F3D357D921049b4363871F1';
-const injuryRegistryAddress = '0x1d3E0eA3F1C75621086bfeB69E032D67f369a582';
-const judokaRegistryAddress = '0x8CA1dB236B6FFf7b71F65e506695606B5c66aEc2';
-const messagingContractAddress = '0x3BF607e1AED8fB460ED2D91C6a0Ba78beaF0648e';
-const migrationsAddress = '0xd0E9fa035595C4169BaD0B87482B74cDf4EE69C6';
-const profileManagementAddress = '0xD63bbD9F83045d872BC6BAc575129A87c3CB3c1c';
-const verificationAddress = '0x7D2C3dcf42fac72507cc80Eec6258C013c87fDdd';
-const votingContractAddress = '0xBea8cE8953DA81FeBc788E697BD9Fb83d6B56dbb';
+const coachRegistryAddress = '0xa9aA3126d032C1fDAc7d4d0dFdAcACA14eeF4bb8';
+const competitionRecordsAddress = '0x060F93494c491A602287e48779eBBfFEa12B8332';
+const contentManagementAddress = '0xAe44fa5527b43033b097c692160A9E39bDEaf5C2';
+const eventParticipationAddress = '0x44428ce08A1276b40b8272cb6d8A940CeAe60fF0';
+const forumContractAddress = '0x51c021FB6Af613480C5A1afC31aaEC073F8f5965';
+const injuryRegistryAddress = '0x0F8FEE52D4c3339Bf730B32196Bf484e84510041';
+const judokaRegistryAddress = '0x239cB6edC2A80d3020a2b1f266aB6797Cca6ec71';
+const messagingContractAddress = '0x7CDdfA7C98bc8b6E03f07e1322d84D73872F929B';
+const migrationsAddress = '0x4f5a59354663520AAF7c896D83AE708B628e9D30';
+const profileManagementAddress = '0x433D6D4222FcD7f34C0C2eEC5E2Ec0eDC18986f2';
+const verificationAddress = '0x49c3b14922098580045Df4Fd6CE101F5Bd635faF';
+const votingContractAddress = '0x413Cf9b2Bfc3D88DC3161B56995BE04DE85ee12F';
 
 const coachRegistryContract = new web3.eth.Contract(CoachRegistry.abi, coachRegistryAddress);
 const competitionRecordsContract = new web3.eth.Contract(CompetitionRecords.abi, competitionRecordsAddress);
