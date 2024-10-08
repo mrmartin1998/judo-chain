@@ -63,6 +63,3 @@ JudoChain is a decentralized application (DApp) built on Ethereum that facilitat
 
 ### 5. Forum Interaction:
 - Users can post in forums, comment on posts, and engage in public discussions.
-
-## Conclusion:
-JudoChain is a fully decentralized platform that uses smart contracts to provide secure, transparent, and immutable record-keeping for the Judo community. The system enables Judokas to engage in a social and voting system while keeping track of their achievements and interactions on the blockchain.
